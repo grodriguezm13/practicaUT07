@@ -1,0 +1,60 @@
+body {
+  padding-top: 80px;
+}
+  
+@media (min-width: 992px) {
+  body {
+    padding-top: 82px;
+  }
+}
+
+span.card-text {
+  position: absolute;
+  top: 8px;
+  right: -9px;
+  font-size: 18px;
+  color: white;
+  border: 3px solid #0e0f0f;
+  background-color: #343a40;
+  padding: 0 10px;
+  border-radius: 15px;
+}
+
+p.cajaTitulo{
+  color: darkblue;
+}
+
+p.cajaDescripcion{
+  text-indent: 10%;
+}
+
+button.list-group-item, button.nav-link{
+  color: #007bff;
+}
+
+ button.nav-link:hover{
+  background-color: #2d93fff1;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  width: 100%;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
