@@ -279,7 +279,7 @@ var VideoSystem = (function () {
 			//Dado un objeto Actor, devuelve la posición de ese objeto.
 			this.getActorPosition = function(actor){
 				function compareActors(arrayActor) {
-				  return (arrayActor.actor.name === actor.name || arrayActor.actor.lastName1 === actor.lastName1)
+				  return (arrayActor.actor.name === actor.name && arrayActor.actor.lastName1 === actor.lastName1)
 				}
 				return _actors.findIndex(compareActors);		
 			}
@@ -342,7 +342,7 @@ var VideoSystem = (function () {
 			//Dado un objeto Director, devuelve la posición de ese objeto.
 			this.getDirectorPosition = function(director){
 				function compareDirectors(arrayDirector) {
-					return (arrayDirector.director.name === director.name || arrayDirector.director.lastName1 === director.lastName1)
+					return (arrayDirector.director.name === director.name && arrayDirector.director.lastName1 === director.lastName1)
 				  }
 				  return _directors.findIndex(compareDirectors);		
 			}//Fin de getDirectorPosition

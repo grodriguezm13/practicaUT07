@@ -75,10 +75,42 @@ function checkCookie() {
 function validarCampoTexto(input){
 	if(input.value == ""){
 		input.setAttribute("class","form-control border border-danger");
+		input.nextSibling.style.display = "block";
+		return false;
 	}else{
 		input.setAttribute("class","form-control border border-success");
+		input.nextSibling.style.display = "none";
+		return true;
 	}
 }//FIn de validarCampoTexto
+
+//Funcion que se usa para los campos de ruta 
+function validarCampoRuta(input){
+	var expresion = expresion = /^[a-z]\:\/\/([\d\w]+\.)$/i;
+	if(expresion.test(input.value) || input.value == ""){
+		input.setAttribute("class","form-control border border-success");
+		input.nextSibling.style.display = "none";
+		return true;
+	}else{
+		input.setAttribute("class","form-control border border-danger");
+		input.nextSibling.style.display = "block";
+		return false;
+	}
+}//FIn de validarCampoRuta
+
+//Funcion que se usa para los campos de fecha
+function validarCampoFecha(input){
+	var expresion = /^(0[1-9]|[1-2]\d|3[01])(\/)(0[1-9]|1[012])\2(\d{4})$/;
+	if(!expresion.test(input.value)){
+		input.setAttribute("class","form-control border border-danger");
+		input.nextSibling.style.display = "block";
+		return false;
+	}else{
+		input.setAttribute("class","form-control border border-success");
+		input.nextSibling.style.display = "none";
+		return true;
+	}
+}//Fin de validarCampoFecha
 
 /* FUNCIONES PARA LOS FORMULARIOS DE LAS CATEGORIAS */
 //FALTA MODIFICAR
@@ -229,28 +261,20 @@ function formCategorias(tipo){
 
 //Valida los campos al enviar el formulario de añadir categoria
 function validarCategorias(){
-	var name = document.forms["addCategory"]["nombreCat"].value;
-	var description = document.forms["addCategory"]["descripCat"].value;
+	var name = document.forms["addCategory"]["nombreCat"];
+	var description = document.forms["addCategory"]["descripCat"];
 	var malNombre = document.getElementById("nombreMal");
 	var malDesc = document.getElementById("descMal");
-	var nombreValido = false;
-	var descripValida = false;
-	if(name == ""){
+	var nombreValido = validarCampoTexto(name);
+	var descripValida = validarCampoTexto(description);
+	if(nombreValido == false){
 		malNombre.innerHTML = "El nombre no puede estar vacio";
-		document.getElementById("nombreCat").setAttribute("class","form-control border border-danger");
-		nombreValido = false;
-	}else{
-		nombreValido = true;
 	}
-	if(description == ""){
-		malDesc.innerHTML = "La descripcion no puede estar vacia";
-		document.getElementById("descripCat").setAttribute("class","form-control border border-danger");
-		descripValida = false;
-	}else{
-		descripValida = true;
+	if(descripValida == false){
+		malDesc.innerHTML = "La descripcion no puede estar vacia";	
 	}
 	if (nombreValido && descripValida) {
-		addNewCategory(name,description);
+		addNewCategory(name.value,description.value);
 	}
 }//FIn de validarCategorias
 
@@ -268,6 +292,7 @@ function addNewCategory(name,description){
 		showHomePage();
 		categoriesMenuPopulate();
 	} catch (error) {
+		document.getElementById("nombreMal").style.display = "block";
 		document.getElementById("nombreMal").innerHTML = "La categoria con el nombre "+name+" ya existe";
 		document.getElementById("nombreCat").setAttribute("class","form-control border border-danger");
 	}	
@@ -305,17 +330,311 @@ function deleteCategory(){
 	}
 }//Fin de deleteCategory
 
+/* FUNCIONES PARA LOS FORMULARIOS DE LOS ACTORES */
+//FALTA MODIFICAR
+//Muestra el formulario de los actores segun el tipo
+function formActoresDirectores(tipo,rol){
+	//Selecciona la zona debajo del menu horizontal de edicion y la oculta
+	var contenidoCentral = document.getElementById("contenidoCentral");
+	contenidoCentral.setAttribute("class","d-none");
+	//Selecciona la zona para poner los formularios
+	var contenidoFormularios = document.getElementById("contenidoFormularios");
+	contenidoFormularios.setAttribute("class","d-block");
+	//QUITA TODO EL CONTENIDO PREVIO POR SI HAY OTROS FORMULARIOS
+	while (contenidoFormularios.firstChild) {
+		contenidoFormularios.removeChild(contenidoFormularios.firstChild);
+	}
+		
+	if (tipo == "add") {
+		var formulario = document.createElement("form");
+		formulario.setAttribute("name","addActorDirector");
+		formulario.setAttribute("action","");
+		formulario.setAttribute("onsubmit","validarActoresDirectores('"+rol+"'); return false");
+		formulario.setAttribute("method","post");
+		var leyenda = document.createElement("legend");
+		leyenda.appendChild(document.createTextNode("Añadir "+rol+""));
+		//NOMBRE DEL ACTOR
+		var grupo1 = document.createElement("div");
+		grupo1.setAttribute("class","form-group");
+		var labelName = document.createElement("label");
+		labelName.setAttribute("for","nombreActor");
+		labelName.appendChild(document.createTextNode("Nombre*"));
+		var inputName = document.createElement("input");
+		inputName.setAttribute("type","text");
+		inputName.setAttribute("class","form-control");
+		inputName.setAttribute("id","nombreActor");
+		inputName.setAttribute("onblur","validarCampoTexto(this)");
+		inputName.setAttribute("placeholder","Nombre");
+		var malName = document.createElement("small");
+		malName.setAttribute("class","form-text text-muted");
+		malName.setAttribute("id","nombreMal");
+		//APELLIDO1 DEL ACTOR
+		var grupo2 = document.createElement("div");
+		grupo2.setAttribute("class","form-group");
+		var labelLastName1 = document.createElement("label");
+		labelLastName1.setAttribute("for","lastName1");
+		labelLastName1.appendChild(document.createTextNode("Primer apellido*"));
+		var inputLastName1 = document.createElement("input");
+		inputLastName1.setAttribute("type","text");
+		inputLastName1.setAttribute("class","form-control");
+		inputLastName1.setAttribute("id","lastName1");
+		inputLastName1.setAttribute("onblur","validarCampoTexto(this)");
+		inputLastName1.setAttribute("placeholder","Primer apellido");
+		var malLastName1 = document.createElement("small");
+		malLastName1.setAttribute("class","form-text text-muted");
+		malLastName1.setAttribute("id","lastName1Mal");
+		//APELLIDO2 DEL ACTOR
+		var grupo3 = document.createElement("div");
+		grupo3.setAttribute("class","form-group");
+		var labelLastName2 = document.createElement("label");
+		labelLastName2.setAttribute("for","lastName2");
+		labelLastName2.appendChild(document.createTextNode("Segundo apellido"));
+		var inputLastName2 = document.createElement("input");
+		inputLastName2.setAttribute("type","text");
+		inputLastName2.setAttribute("class","form-control");
+		inputLastName2.setAttribute("id","lastName2");
+		inputLastName2.setAttribute("onblur","validarCampoTexto(this)");
+		inputLastName2.setAttribute("placeholder","Segundo apellido");
+		var malLastName2 = document.createElement("small");
+		malLastName2.setAttribute("class","form-text text-muted");
+		malLastName2.setAttribute("id","lastName2Mal");
+		//FECHA DE NACIMIENTO DEL ACTOR
+		var grupo4 = document.createElement("div");
+		grupo4.setAttribute("class","form-group");
+		var labelBorn = document.createElement("label");
+		labelBorn.setAttribute("for","born");
+		labelBorn.appendChild(document.createTextNode("Fecha de nacimiento*"));
+		var inputBorn = document.createElement("input");
+		inputBorn.setAttribute("type","text");
+		inputBorn.setAttribute("class","form-control");
+		inputBorn.setAttribute("id","born");
+		inputBorn.setAttribute("onblur","validarCampoFecha(this)");
+		inputBorn.setAttribute("placeholder","MM/DD/AAAA");
+		var malBorn = document.createElement("small");
+		malBorn.setAttribute("class","form-text text-muted");
+		malBorn.setAttribute("id","bornMal");
+		//IMAGEN DEL ACTOR
+		var grupo5 = document.createElement("div");
+		grupo5.setAttribute("class","form-group");
+		var labelPicture = document.createElement("label");
+		labelPicture.setAttribute("for","picture");
+		labelPicture.appendChild(document.createTextNode("Ruta de la imagen"));
+		var inputPicture = document.createElement("input");
+		inputPicture.setAttribute("type","text");
+		inputPicture.setAttribute("class","form-control");
+		inputPicture.setAttribute("id","picture");
+		inputPicture.setAttribute("onblur","validarCampoRuta(this)");
+		inputPicture.setAttribute("placeholder","X://xxxxxx/xxxx");
+		var malPicture = document.createElement("small");
+		malPicture.setAttribute("class","form-text text-muted");
+		malPicture.setAttribute("id","pictureMal");
+		//BOTONES DEL FORMULARIO
+		var grupoBtn = document.createElement("div");
+		grupoBtn.setAttribute("class","form-group d-flex justify-content-around");
+		var aceptar = document.createElement("button");
+		aceptar.setAttribute("type","submit");
+		aceptar.setAttribute("class","btn btn-primary ");
+		aceptar.appendChild(document.createTextNode("Guardar"));
+		var cancelar = document.createElement("button");
+		cancelar.setAttribute("type","button");
+		cancelar.setAttribute("class","btn btn-primary");
+		cancelar.appendChild(document.createTextNode("Cancelar"));
+			
+		//Añade eventos al hacer click sobre los botones del formulario creado
+		cancelar.addEventListener("click", showHomePage);
+		cancelar.addEventListener("click", function(){
+													contenidoCentral.setAttribute("class","d-block");
+													contenidoFormularios.setAttribute("class","d-none");
+													});
+		//Crea el formulario
+		grupo1.appendChild(labelName);
+		grupo1.appendChild(inputName);
+		grupo1.appendChild(malName);
+		grupo2.appendChild(labelLastName1);
+		grupo2.appendChild(inputLastName1);
+		grupo2.appendChild(malLastName1);
+		grupo3.appendChild(labelLastName2);
+		grupo3.appendChild(inputLastName2);
+		grupo3.appendChild(malLastName2);
+		grupo4.appendChild(labelBorn);
+		grupo4.appendChild(inputBorn);
+		grupo4.appendChild(malBorn);
+		grupo5.appendChild(labelPicture);
+		grupo5.appendChild(inputPicture);
+		grupo5.appendChild(malPicture);
+		grupoBtn.appendChild(aceptar);
+		grupoBtn.appendChild(cancelar);
+		formulario.appendChild(leyenda);
+		formulario.appendChild(grupo1);
+		formulario.appendChild(grupo2);
+		formulario.appendChild(grupo3);
+		formulario.appendChild(grupo4);
+		formulario.appendChild(grupo5);
+		formulario.appendChild(grupoBtn);
+		contenidoFormularios.appendChild(formulario);
+		/* FIN DEL FORMULARIO DE AÑADIR ACTOR */
+	}else if (tipo == "delete") {
+		var formulario = document.createElement("form");
+		formulario.setAttribute("name","deleteActor");
+		formulario.setAttribute("action","");
+		formulario.setAttribute("onsubmit","return false");
+		formulario.setAttribute("method","post");
+		var leyenda = document.createElement("legend");
+		var grupo = document.createElement("div");
+		grupo.setAttribute("class","form-group");
+		leyenda.appendChild(document.createTextNode("Eliminar actor/actriz"));
+		var label = document.createElement("label");
+		label.setAttribute("for","categoria");
+		label.appendChild(document.createTextNode("Nombre del actor/actriz"));
+		//SE CREA EL SELECT CON LAS CATEGORIAS
+		var select = document.createElement("select");
+		select.setAttribute("class","custom-select");
+		select.setAttribute("name","actor");
+		select.setAttribute("id","actor");
+		var categorias = video.categories;
+		var categoria = categorias.next();
+		while (categoria.done !== true){
+			var opcion = document.createElement("option");
+			opcion.setAttribute("value",categoria.value.name);
+			opcion.appendChild(document.createTextNode(categoria.value.name));
+			select.appendChild(opcion);
+			categoria = categorias.next();
+		}
+		var grupoBtn = document.createElement("div");
+		grupoBtn.setAttribute("class","form-group d-flex justify-content-around");
+		var eliminar = document.createElement("button");
+		eliminar.setAttribute("type","button");
+		eliminar.setAttribute("class","btn btn-primary ");
+		eliminar.appendChild(document.createTextNode("Eliminar"));
+		var cancelar = document.createElement("button");
+		cancelar.setAttribute("type","button");
+		cancelar.setAttribute("class","btn btn-primary");
+		cancelar.appendChild(document.createTextNode("Cancelar"));
+		//Añade eventos al hacer click sobre los botones del formulario creado
+		eliminar.addEventListener("click", deleteCategory);
+		cancelar.addEventListener("click", showHomePage);
+		cancelar.addEventListener("click", function(){
+													contenidoCentral.setAttribute("class","d-block");
+													contenidoFormularios.setAttribute("class","d-none");
+													});
 
+		//se crea el formulario de borrado
+		formulario.appendChild(leyenda);
+		grupo.appendChild(label);
+		grupo.appendChild(select);
+		formulario.appendChild(grupo);
+		grupoBtn.appendChild(eliminar);
+		grupoBtn.appendChild(cancelar);
+		formulario.appendChild(grupoBtn);
+		contenidoFormularios.appendChild(formulario);
+	}else if (tipo == "update") {
+		//Llama a la funcion con el parametro add para que cargue los campos
+		formCategorias('add');
+		//Se cambia el titulo del legend del formulario antiguo
+		document.getElementsByTagName("legend")[0].textContent = "Modificar categoria";
+	
 
-function iterador(){
-	console.log("-----------------------------------------------");
-	//Mostramos las categorias que hay
-	console.log("#### Mostramos las categorias ####");
+	}//Fin de los if
+}//Fin de formActores
+
+//Valida los campos al enviar el formulario de añadir categoria
+function validarActoresDirectores(rol){
+	var name = document.forms["addActorDirector"]["nombreActor"];
+	var malNombre = document.getElementById("nombreMal");
+	var lastName1 = document.forms["addActorDirector"]["lastName1"];
+	var malLastName1 = document.getElementById("lastName1Mal");
+	var lastName2 = document.forms["addActorDirector"]["lastName2"];
+	var born = document.forms["addActorDirector"]["born"];
+	var malBorn = document.getElementById("bornMal");
+	var picture = document.forms["addActorDirector"]["picture"];
+	var malPicture = document.getElementById("pictureMal");
+	//Llama a las funciones de validar
+	var nombreValido = validarCampoTexto(name);
+	var lastName1Valido = validarCampoTexto(lastName1);
+	var bornValido = validarCampoFecha(born);
+	var pictureValido = validarCampoRuta(picture); 
+	if(nombreValido == false){
+		malNombre.innerHTML = "El nombre no puede estar vacio";
+	}
+	if(lastName1Valido == false){
+		malLastName1.innerHTML = "El primer apellido no puede estar vacio";	
+	}
+	if(bornValido == false){
+		malBorn.innerHTML = "La fecha esta mal introducida";	
+	}
+	if(pictureValido == false){
+		malPicture.innerHTML = "La ruta de la imagen esta mal introducida";	
+	}
+	if (nombreValido && lastName1Valido && bornValido && pictureValido) {
+		var apellido2 = null;
+		var imagen = null;
+		if (lastName2.value != "") {
+			apellido2 = lastName2.value;
+		}
+		if (picture.value != "") {
+			imagen = picture.value;
+		}
+		var fecha = new Date(""+born.value+"");
+		if (rol == "Actor") {
+			addNewActor(name.value, lastName1.value, fecha, apellido2, imagen);
+		}else if(rol == "Director"){
+			addNewDirector(name.value, lastName1.value, fecha, apellido2, imagen);
+		}
+	}//Fin del if
+}//FIn de validarActores
+
+//Añade al video system la persona nueva y la añade como actor, si existe no deja añadir
+function addNewActor(name, lastName1, born, lastName2, picture){
+	try {
+		var newPerson = new Person(name, lastName1, born, lastName2, picture);
+		video.addActor(newPerson);
+		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+		var contenidoCentral = document.getElementById("contenidoCentral");
+		contenidoCentral.setAttribute("class","d-block");
+		//Selecciona la zona para poner los formularios
+		var contenidoFormularios = document.getElementById("contenidoFormularios");
+		contenidoFormularios.setAttribute("class","d-none");
+		showHomePage();
+		categoriesMenuPopulate();
+	} catch (error) {
+		document.getElementById("nombreMal").innerHTML = "El actor "+name+" "+lastName1+" ya existe";
+		document.getElementById("nombreMal").style.display = "block";
+		document.getElementById("nombreActor").setAttribute("class","form-control border border-danger");
+		document.getElementById("lastName1Mal").innerHTML = "El actor "+name+" "+lastName1+" ya existe";
+		document.getElementById("lastName1Mal").style.display = "block";
+		document.getElementById("lastName1").setAttribute("class","form-control border border-danger");
+	}	
+}//Fin de addNewActor
+
+//Elimina un actor seleccionada
+function deleteActor(){
+	var cat = document.forms["deleteActor"]["categoria"].value;
+	var eliminar = null;
+	var encontrado = false;
 	var categorias = video.categories;
 	var categoria = categorias.next();
-	while (categoria.done !== true){
-		console.log ("" + categoria.value);
+	while ((categoria.done !== true) && (!encontrado)){
+		if (categoria.value.name == cat) {
+			//Si la encuentra asigna el objeto con ese nombre a la variable eliminar
+			eliminar = categoria.value;
+			encontrado = true;
+		}//Fin del if que compara el nombre de la categoria con el valor del select
+    //Pasa a la siguiente categoria
 		categoria = categorias.next();
+	}//FIn del while iterador
+	try {
+		//Elimina el objeto que se ha encontrado
+		video.removeCategory(eliminar);
+		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+		var contenidoCentral = document.getElementById("contenidoCentral");
+		contenidoCentral.setAttribute("class","d-block");
+		//Selecciona la zona para poner los formularios
+		var contenidoFormularios = document.getElementById("contenidoFormularios");
+		contenidoFormularios.setAttribute("class","d-none");
+		showHomePage();
+		categoriesMenuPopulate();
+	} catch (error) {
+		alert(eliminar);
 	}
-	console.log("-----------------------------------------------");
-}
+}//Fin de deleteActor
+
