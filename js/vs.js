@@ -995,6 +995,9 @@ var arrayVentanas = new Array();
 function abrirVentana(){
 	var index = 0;
 	var encontrada = false;
+	
+	//Activa el boton de cerrar ventanas
+	document.getElementById("btnVentanas").style.display = "block";
 	//Si es la primera vez que se ejecuta la funcion crea directamente la ventana
 	if((arrayVentanas[0] == undefined) || (arrayVentanas[0].name == "")){
 		crearVentana(this.value);
@@ -1012,6 +1015,7 @@ function abrirVentana(){
 			crearVentana(this.value);
 		}
 	}//Fin del if
+	
 }//FIn de abrir ventana
 
 //Crea una ventana
@@ -1022,6 +1026,7 @@ function crearVentana(nombre){
 
 //Cierra las ventanas abiertas
 function cerrarVentanas(){
+	var boton = document.getElementById("btnVentanas");
 	for (let index = 0; index < arrayVentanas.length; index++) {
 		//Si la ventana no esta cerrada la cierra
 		if (!arrayVentanas[index].closed) {
@@ -1032,6 +1037,7 @@ function cerrarVentanas(){
 	while(arrayVentanas.length != 0){
 		arrayVentanas.shift();
 	}
+	boton.style.display = "none";
 }//FIn de cerrarVentanas
 
 //Muestra los recursos relacionados con una producción en una nueva ventana
@@ -1039,7 +1045,7 @@ function cerrarVentanas(){
 function showResource(){
 	//Se recoge el titulo de la produccion
 	var tituloProduccion = document.getElementById("titulo");
-	
+
 	//Se recorre el array de ventanas 
 	for (let index = 0; index < arrayVentanas.length; index++) {
 		//Si el titulo es igual a la ventana que haya en el array

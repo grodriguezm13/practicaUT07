@@ -58,3 +58,11 @@ button.list-group-item, button.nav-link{
 .dropdown:hover .dropdown-content {
   display: block;
 }
+
+#btnVentanas{
+  display: none;
+}
+
+#menuEdicion{
+  display: none;
+}

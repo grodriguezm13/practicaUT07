@@ -22,36 +22,27 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item active">
-                <a id="saludo" class="nav-link" href="video.html">Inicio</a>
-              </li>
-              <li class="nav-item active">
-                <button type="button" class="btn btn-light" onclick="cerrarVentanas()">Cerrar ventanas</button>
+              <li class="nav-item">
+                <a id="saludo" class="nav-link text-white" href="javascript:void(0)">&nbsp;</a>
               </li>
               <!-- Se muestra si no ha iniciado sesion, sino esta oculto -->
-              <div id="btnInicio" class="dropdown">
-                  <button type="button" id="ibI" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Iniciar Sesion</button>
-                    <form name="inicioSesion" class="dropdown-menu p-4" action="#" onsubmit="validarUsuario(); return false" method="post">
-                      <div class="form-group">
-                        <label for="usuarioForm">Usuario</label>
-                        <input type="text" class="form-control" name="usuarioForm" id="usuarioForm">
-                      </div>
-                      <div class="form-group">
-                        <label for="passForm">Contraseña</label>
-                        <input type="password" class="form-control" name="passForm" id="passForm">
-                      </div>
-                      <button type="submit" class="btn btn-primary">Entrar</button>
-                    </form>
+              <div id="formInicio">
+                <form name="inicioSesion" class="form-inline" action="#" onsubmit="validarUsuario(); return false" method="post">
+                  <div class="form-group">
+                    <input type="text" class="form-control-sm mx-1" name="usuarioForm" id="usuarioForm" placeholder="Usuario">
+                    <div class="invalid-tooltip"></div>
+                  </div>
+                  <div class="form-group">
+                    <input type="password" class="form-control-sm mx-1" name="passForm" id="passForm" placeholder="Contraseña">
+                  </div>
+                  <button type="submit" class="btn btn-sm btn-primary">Entrar</button>
+                </form>
               </div>
               <!-- Se muestra si se ha iniciado sesion, sino esta oculto -->
-              <div id="btnCuenta" class="dropdown">
-                  <button type="button" id="ibI" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Cuenta</button>
-                  <div class="dropdown-menu">
-                      <a class="dropdown-item" href="javascript:void(0)">Ajustes</a>
-                      <form name="cerrarSesion" action="" onsubmit="checkCookies(); return false" method="post">
-                        <button type="button" class="dropdown-item btn btn-primary" onclick="document.cookie = 'userMail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'">Cerrar Sesion</button>
-                      </form>
-                  </div>
+              <div id="btnCuenta">
+                <li class="nav-item">
+                  <button type="button" class="btn btn-primary" onclick="document.cookie = 'userMail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';checkCookie();">Cerrar Sesion</a>
+                </li>
               </div>
             </ul>
           </div>
@@ -80,15 +71,15 @@
         <a class="nav-link dropbtn btn btn-dark" href="javascript:void(0)">ACTORES</a>
         <div class="dropdown-content">
           <a href="javascript:void(0)" onclick="formActoresDirectores('add','Actor')">Añadir actor/actriz</a>
-          <a href="#">Eliminar actor/actriz</a>
+          <a href="javascript:void(0)" onclick="formActoresDirectores('delete','Actor')">Eliminar actor/actriz</a>
           <a href="#">Modificar actor/actriz</a>
         </div>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropbtn btn btn-dark" href="javascript:void(0)">DIRECTORES</a>
         <div class="dropdown-content">
-          <a href="#">Añadir director/a</a>
-          <a href="#">Eliminar director/a</a>
+          <a href="javascript:void(0)" onclick="formActoresDirectores('add','Director')">Añadir director/a</a>
+          <a href="javascript:void(0)" onclick="formActoresDirectores('delete','Director')">Eliminar director/a</a>
           <a href="#">Modificar director/a</a>
         </div>
       </li>
@@ -126,6 +117,10 @@
             </li>
             <li class="nav-item">
               <button id="btnDirectores" type="button" class="list-group-item btn btn-primary btn-lg btn-block"><b>Directores</b></button>
+            </li>
+            <li class="nav-item" id="btnVentanas">
+              <hr>
+              <button type="button"  class="list-group-item btn btn-primary btn-lg btn-block" onclick="cerrarVentanas()">Cerrar ventanas</button>
             </li>
           </ul>
         </div>

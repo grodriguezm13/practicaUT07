@@ -5,22 +5,32 @@ function validarUsuario(){
 	//S recogen los valores del formulario
 	var nombre = document.forms["inicioSesion"]["usuarioForm"].value;
 	var pass = document.forms["inicioSesion"]["passForm"].value;
+	var error = document.getElementById("usuarioForm").nextSibling.nextSibling;
+	var menuExtra = document.getElementById("menuEdicion");
 	var encontrado = false;
-	//Usa el iterador de usuario
-	var usuarios = video.users;
-	var usuario = usuarios.next();
-	while ((usuario.done !== true) || !encontrado){
-		if(usuario.value.userName == nombre.trim() && usuario.value.password == pass.trim()){
-			setCookie("userMail", usuario.value.email, 1);
-			encontrado = true;
-		}
-		usuario = usuarios.next();
+
+	//Si ha introducido algo en los campos
+	if (nombre != "" && pass != "") {
+		//Usa el iterador de usuario
+		var usuarios = video.users;
+		var usuario = usuarios.next();
+		while ((usuario.done !== true) || !encontrado){
+			if(usuario.value.userName == nombre.trim() && usuario.value.password == pass.trim()){
+				setCookie("userMail", usuario.value.email, 1);
+				encontrado = true;
+			}
+			usuario = usuarios.next();
+		}//Fin del while iterador
+	}else{
+		encontrado = false;
 	}
 	if (encontrado) {
-		console.log("si");
-		
-	}else{
-		console.log("no");
+		menuExtra.style.display = "flex";
+		error.style.display = "none";
+		checkCookie();
+	} else if(!encontrado){
+		error.style.display = "inline";
+		error.textContent = "EL usuario o contraseña son erroneos";
 	}
 }//Fin de validarUsuario
 
@@ -52,21 +62,26 @@ function getCookie(cname) {
 //Comprueba si hay cookies en el sistema para mostrar datos u ocultar
 function checkCookie() {
 	var btnCuenta = document.getElementById("btnCuenta");
-	var btnInicio = document.getElementById("btnInicio");
+	var formInicio = document.getElementById("formInicio");
 	var menuExtra = document.getElementById("menuEdicion");
 	var saludo = document.getElementById("saludo");
 	var user = getCookie("userMail");
 
 	if (user != "") {
 		//Si ha iniciado sesion y existe la cookie
-		saludo.innerText = user;
+		saludo.style.display = "block";
+		saludo.lastChild.textContent = "Bienvenido, " + user;
 		btnCuenta.style.display = "block";
-		btnInicio.style.display = "none";
+		formInicio.style.display = "none";
+		menuExtra.style.display = "flex";
 	} else {
-		//Si no existe la cookie
+		//Pone todo oculto y resetea los campos de inicio de sesion, por si se ha cerrado sesion
+		saludo.style.display = "none";
 		menuExtra.style.display = "none";
 		btnCuenta.style.display = "none";
-		btnInicio.style.display = "block";
+		formInicio.style.display = "block";
+		document.forms["inicioSesion"]["usuarioForm"].value = "";
+		document.forms["inicioSesion"]["passForm"].value = "";
 	}
 }//Fin de checkCookie
 
@@ -100,7 +115,7 @@ function validarCampoRuta(input){
 
 //Funcion que se usa para los campos de fecha
 function validarCampoFecha(input){
-	var expresion = /^(0[1-9]|[1-2]\d|3[01])(\/)(0[1-9]|1[012])\2(\d{4})$/;
+	var expresion = /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/;
 	if(!expresion.test(input.value)){
 		input.setAttribute("class","form-control border border-danger");
 		input.nextSibling.style.display = "block";
@@ -330,7 +345,7 @@ function deleteCategory(){
 	}
 }//Fin de deleteCategory
 
-/* FUNCIONES PARA LOS FORMULARIOS DE LOS ACTORES */
+/* FUNCIONES PARA LOS FORMULARIOS DE LOS ACTORES Y DIRECTORES */
 //FALTA MODIFICAR
 //Muestra el formulario de los actores segun el tipo
 function formActoresDirectores(tipo,rol){
@@ -472,33 +487,45 @@ function formActoresDirectores(tipo,rol){
 		formulario.appendChild(grupo5);
 		formulario.appendChild(grupoBtn);
 		contenidoFormularios.appendChild(formulario);
-		/* FIN DEL FORMULARIO DE AÑADIR ACTOR */
+		/* FIN DEL FORMULARIO DE AÑADIR ACTOR/DIRECTOR */
 	}else if (tipo == "delete") {
 		var formulario = document.createElement("form");
-		formulario.setAttribute("name","deleteActor");
+		formulario.setAttribute("name","deleteActorDirector");
 		formulario.setAttribute("action","");
 		formulario.setAttribute("onsubmit","return false");
 		formulario.setAttribute("method","post");
 		var leyenda = document.createElement("legend");
 		var grupo = document.createElement("div");
 		grupo.setAttribute("class","form-group");
-		leyenda.appendChild(document.createTextNode("Eliminar actor/actriz"));
+		leyenda.appendChild(document.createTextNode("Eliminar "+rol+""));
 		var label = document.createElement("label");
-		label.setAttribute("for","categoria");
-		label.appendChild(document.createTextNode("Nombre del actor/actriz"));
+		label.setAttribute("for","person");
+		label.appendChild(document.createTextNode("Nombre del "+rol+""));
 		//SE CREA EL SELECT CON LAS CATEGORIAS
 		var select = document.createElement("select");
 		select.setAttribute("class","custom-select");
-		select.setAttribute("name","actor");
-		select.setAttribute("id","actor");
-		var categorias = video.categories;
-		var categoria = categorias.next();
-		while (categoria.done !== true){
-			var opcion = document.createElement("option");
-			opcion.setAttribute("value",categoria.value.name);
-			opcion.appendChild(document.createTextNode(categoria.value.name));
-			select.appendChild(opcion);
-			categoria = categorias.next();
+		select.setAttribute("name","person");
+		select.setAttribute("id","person");
+		if (rol == "Actor") {
+			var actores = video.actors;
+			var actor = actores.next();
+			while (actor.done !== true){
+				var opcion = document.createElement("option");
+				opcion.setAttribute("value",actor.value.name);
+				opcion.appendChild(document.createTextNode(actor.value.name+" "+actor.value.lastName1+" "+actor.value.lastName2));
+				select.appendChild(opcion);
+				actor = actores.next();
+			}
+		}else if(rol == "Director"){
+			var directores = video.directors;
+			var director = directores.next();
+			while (director.done !== true){
+				var opcion = document.createElement("option");
+				opcion.setAttribute("value",director.value.name);
+				opcion.appendChild(document.createTextNode(director.value.name+" "+director.value.lastName1+" "+director.value.lastName2));
+				select.appendChild(opcion);
+				director = directores.next();
+			}
 		}
 		var grupoBtn = document.createElement("div");
 		grupoBtn.setAttribute("class","form-group d-flex justify-content-around");
@@ -511,7 +538,11 @@ function formActoresDirectores(tipo,rol){
 		cancelar.setAttribute("class","btn btn-primary");
 		cancelar.appendChild(document.createTextNode("Cancelar"));
 		//Añade eventos al hacer click sobre los botones del formulario creado
-		eliminar.addEventListener("click", deleteCategory);
+		if (rol == "Actor") {
+			eliminar.addEventListener("click", deleteActor);
+		}else if (rol == "Director") {
+			eliminar.addEventListener("click", deleteDirector);
+		}
 		cancelar.addEventListener("click", showHomePage);
 		cancelar.addEventListener("click", function(){
 													contenidoCentral.setAttribute("class","d-block");
@@ -527,11 +558,9 @@ function formActoresDirectores(tipo,rol){
 		grupoBtn.appendChild(cancelar);
 		formulario.appendChild(grupoBtn);
 		contenidoFormularios.appendChild(formulario);
+		/* FIN DEL FORMULARIO DE ELIMINAR ACTOR/DIRECTOR */
 	}else if (tipo == "update") {
-		//Llama a la funcion con el parametro add para que cargue los campos
-		formCategorias('add');
-		//Se cambia el titulo del legend del formulario antiguo
-		document.getElementsByTagName("legend")[0].textContent = "Modificar categoria";
+		
 	
 
 	}//Fin de los if
@@ -606,25 +635,24 @@ function addNewActor(name, lastName1, born, lastName2, picture){
 	}	
 }//Fin de addNewActor
 
-//Elimina un actor seleccionada
+//Elimina un actor seleccionado
 function deleteActor(){
-	var cat = document.forms["deleteActor"]["categoria"].value;
+	var cat = document.forms["deleteActorDirector"]["person"].value;
 	var eliminar = null;
 	var encontrado = false;
-	var categorias = video.categories;
-	var categoria = categorias.next();
-	while ((categoria.done !== true) && (!encontrado)){
-		if (categoria.value.name == cat) {
+	var actores = video.actors;
+	var actor = actores.next();
+	while ((actor.done !== true) && (!encontrado)){
+		if (actor.value.name == cat) {
 			//Si la encuentra asigna el objeto con ese nombre a la variable eliminar
-			eliminar = categoria.value;
+			eliminar = actor.value;
 			encontrado = true;
 		}//Fin del if que compara el nombre de la categoria con el valor del select
-    //Pasa a la siguiente categoria
-		categoria = categorias.next();
-	}//FIn del while iterador
+		actor = actores.next();
+	}
 	try {
 		//Elimina el objeto que se ha encontrado
-		video.removeCategory(eliminar);
+		video.removeActor(eliminar);
 		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
 		var contenidoCentral = document.getElementById("contenidoCentral");
 		contenidoCentral.setAttribute("class","d-block");
@@ -634,7 +662,62 @@ function deleteActor(){
 		showHomePage();
 		categoriesMenuPopulate();
 	} catch (error) {
-		alert(eliminar);
+		
 	}
 }//Fin de deleteActor
+
+//Añade al video system la persona nueva y la añade como director, si existe no deja añadir
+function addNewDirector(name, lastName1, born, lastName2, picture){
+	try {
+		var newPerson = new Person(name, lastName1, born, lastName2, picture);
+		video.addDirector(newPerson);
+		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+		var contenidoCentral = document.getElementById("contenidoCentral");
+		contenidoCentral.setAttribute("class","d-block");
+		//Selecciona la zona para poner los formularios
+		var contenidoFormularios = document.getElementById("contenidoFormularios");
+		contenidoFormularios.setAttribute("class","d-none");
+		showHomePage();
+		categoriesMenuPopulate();
+	} catch (error) {
+		document.getElementById("nombreMal").innerHTML = "El director "+name+" "+lastName1+" ya existe";
+		document.getElementById("nombreMal").style.display = "block";
+		document.getElementById("nombreActor").setAttribute("class","form-control border border-danger");
+		document.getElementById("lastName1Mal").innerHTML = "El director "+name+" "+lastName1+" ya existe";
+		document.getElementById("lastName1Mal").style.display = "block";
+		document.getElementById("lastName1").setAttribute("class","form-control border border-danger");
+	}	
+}//Fin de addNewDirector
+
+//Elimina un director seleccionado
+function deleteDirector(){
+	var cat = document.forms["deleteActorDirector"]["person"].value;
+	var eliminar = null;
+	var encontrado = false;
+	var directores = video.directors;
+	var director = directores.next();
+	while ((director.done !== true) && (!encontrado)){
+		if (director.value.name == cat) {
+			//Si lo encuentra asigna el objeto con ese nombre a la variable eliminar
+			eliminar = director.value;
+			encontrado = true;
+		}//Fin del if que compara el nombre del director con el valor del select
+		director = directores.next();
+	}
+	try {
+		//Elimina el objeto que se ha encontrado
+		video.removeDirector(eliminar);
+		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+		var contenidoCentral = document.getElementById("contenidoCentral");
+		contenidoCentral.setAttribute("class","d-block");
+		//Selecciona la zona para poner los formularios
+		var contenidoFormularios = document.getElementById("contenidoFormularios");
+		contenidoFormularios.setAttribute("class","d-none");
+		showHomePage();
+		categoriesMenuPopulate();
+	} catch (error) {
+		
+	}
+}//Fin de deleteDirector
+
 

@@ -10,6 +10,11 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 0.2.2
+- Se ha solucionado un problema al recargar la ventana emergente con los recursos que hacia que se perdiese la informacion
+- Se ha modificado el formulario de inicio de sesion
+- Se han realizado cambios a la hora de ocultar y/o mostrar componentes de la interfaz
+
 Version 0.2.1
 - Se ha corregido un error en el archivo js/VideoSystem.js que impedia añadir actores o directores si coincidia el apellido o nombre del nuevo
 - Mejoras visuales de los formularios existentes

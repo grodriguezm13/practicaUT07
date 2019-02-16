@@ -28,7 +28,16 @@
       <button class="btn btn-primary btn-lg" onclick="window.close()">Cerrar</button>
   </main>
   <!-- FIN CONTENIDO PRINCIPAL -->
-  <script>
+  <script language="javascript">
+    document.onkeydown = function(){ 
+      if(window.event && window.event.keyCode == 116){ 
+          window.event.keyCode = 505; 
+      }
+      if(window.event && window.event.keyCode == 505){ 
+        return false;    
+      } 
+    } //Fin de la funcion
+
     function cargaDatos(){
       //llama a la funcion de showResource de la ventana
       window.opener.showResource();
