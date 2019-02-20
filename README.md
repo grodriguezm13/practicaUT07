@@ -10,6 +10,9 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 0.2.4.1
+- Se ha solucionado un error que hacia que la pagina se recargase al introducir mal los datos de inicio de sesion
+
 Version 0.2.4
 - Cambios en la interfaz de eliminacion de Categorias, Actores, Directores y Recursos
 

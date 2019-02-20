@@ -14,7 +14,7 @@ function validarUsuario(){
 		//Usa el iterador de usuario
 		var usuarios = video.users;
 		var usuario = usuarios.next();
-		while ((usuario.done !== true) || !encontrado){
+		while ((usuario.done !== true) && !encontrado){
 			if(usuario.value.userName == nombre.trim() && usuario.value.password == pass.trim()){
 				setCookie("userMail", usuario.value.email, 1);
 				encontrado = true;
