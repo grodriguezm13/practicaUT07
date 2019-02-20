@@ -10,6 +10,13 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 0.2.4
+- Cambios en la interfaz de eliminacion de Categorias, Actores, Directores y Recursos
+
+Version 0.2.3
+- Se ha añadido el formulario de añadir/eliminar recursos y sus respectivas funciones
+- Se ha arreglado un error al mostrar el menu de las categorias al crear o borrar una categoria
+
 Version 0.2.2
 - Se ha solucionado un problema al recargar la ventana emergente con los recursos que hacia que se perdiese la informacion
 - Se ha modificado el formulario de inicio de sesion

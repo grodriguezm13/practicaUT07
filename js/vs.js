@@ -1,3 +1,6 @@
+//Array para guardar los recursos del sistema
+var arrayRecursos = new Array();
+
 //Funcion que inicializa todos los objetos y la relacion entre ellos
 function initPopulate(){
 	
@@ -31,12 +34,17 @@ function initPopulate(){
 	} catch (error) {
 		console.log("" + error);
 	}
-    //Se crean objetos resource
+	//Se crean objetos resource
+	
 	try {
 		var resource = new Resource(180,"http://www.guiromo.es/resource",["Español","Ingles"],["Chino","Japones"]);
+		arrayRecursos.push(resource);
 		var resource1 = new Resource(120,"http://www.guiromo.es/resource1");
+		arrayRecursos.push(resource1);
 		var resource2 = new Resource(25,"http://www.guiromo.es/resource2",["Español","Ingles"],["Ruso","Ingles"]);
+		arrayRecursos.push(resource2);
 		var resource3 = new Resource(50,"http://www.guiromo.es/resource3",["Español","Ingles"],["Aleman","Ingles"]);
+		arrayRecursos.push(resource3);
 	} catch (error) {
 		console.log("" + error);
 	}
@@ -349,7 +357,11 @@ function showHomePage(){
 //Carga el menu lateral con las categorias
 function categoriesMenuPopulate(){
 	//Selecciona el menu lateral donde van a ir las categorias del sistema
-	var menu = document.getElementById("menuCategorias").getElementsByClassName("nav")[0];
+	var menu = document.getElementById("menuCategorias").getElementsByClassName("nav flex-column mx-2")[0];
+	//QUITA TODO EL CONTENIDO QUE HAYA EN EL MENU 
+	while (menu.firstChild) {
+		menu.removeChild(menu.firstChild);
+	}
 
 	//Con un iterador recorremos todas las categorias del sistema
 	//Y creamos el menu lateral mientras haya categorias
