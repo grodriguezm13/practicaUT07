@@ -10,6 +10,9 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 0.2.5
+- Se ha añadido el formulario de eliminar produccion
+
 Version 0.2.4.1
 - Se ha solucionado un error que hacia que la pagina se recargase al introducir mal los datos de inicio de sesion
 
