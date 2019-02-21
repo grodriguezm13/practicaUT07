@@ -188,6 +188,8 @@ function validarCampoFecha(input){
 
 /* FUNCIONES PARA LOS FORMULARIOS DE LAS CATEGORIAS */
 //FALTA MODIFICAR
+//Array que recoge las producciones para asignarlas a las nueva categoria
+var arrayProducciones = new Array();
 //Muestra el formulario de las categorias segun el tipo
 function formCategorias(tipo){
 	//Selecciona la zona debajo del menu horizontal de edicion y la oculta
@@ -237,6 +239,87 @@ function formCategorias(tipo){
 		var mal2 = document.createElement("small");
 		mal2.setAttribute("id","descMal");
 		mal2.setAttribute("class","form-text text-muted");
+		//SE CREA EL BUSCADOR 
+		var grupo3 = document.createElement("div");
+		grupo3.setAttribute("class","form-group");
+		var label3 = document.createElement("label");
+		label3.setAttribute("for","produccionesCat");
+		label3.appendChild(document.createTextNode("Asignar producciones a la nueva categoria"));
+		var divInputBtn = document.createElement("div");
+		divInputBtn.setAttribute("class","input-group");
+		var divBtn = document.createElement("div");
+		divBtn.setAttribute("class","input-group-prepend");
+		var botonRemover = document.createElement("button");
+		botonRemover.setAttribute("type","button");
+		botonRemover.setAttribute("class","btn btn-sm btn-outline-secondary");
+		botonRemover.appendChild(document.createTextNode("Remover"));
+		//añade el evento al hacer click al boton de remover
+		botonRemover.addEventListener("click",function(){
+			var input = document.forms["addCategory"]["producciones"];
+				//Quita el ultimo elemento del array
+				arrayProducciones.pop();
+				input.value = arrayProducciones.toString();
+
+		});
+		var produc = document.createElement("input");
+		produc.setAttribute("class","form-control ");
+		produc.setAttribute("type","text");
+		produc.setAttribute("id","producciones");
+		produc.readOnly = true;
+		var buscador = document.createElement("input");
+		buscador.setAttribute("class","form-control my-3");
+		buscador.setAttribute("type","text");
+		buscador.setAttribute("id","buscador");
+		buscador.setAttribute("placeholder","Buscar...");
+		//SE CREA LA TABLA DE LAS PRODUCCIONES
+		var tabla = document.createElement("table");
+		tabla.setAttribute("class","table table-bordered");
+		tabla.setAttribute("name","produccion");
+		tabla.setAttribute("id","produccion");
+		var thead = document.createElement("thead");
+		var tr = document.createElement("tr");
+		var thVacio = document.createElement("th");
+		thVacio.appendChild(document.createTextNode(""));
+		var thNombre = document.createElement("th");
+		thNombre.appendChild(document.createTextNode("Nombre"));
+		var thDesc = document.createElement("th");
+		thDesc.appendChild(document.createTextNode("Tipo"));
+		var tbody = document.createElement("tbody");
+		tbody.setAttribute("id","tablaProducciones");
+		var producciones = video.productions;
+		var produccion = producciones.next();
+		while (produccion.done !== true){
+			var trPro = document.createElement("tr");
+			var tdAdd = document.createElement("td");
+			var add = document.createElement("button");
+			add.setAttribute("type","button");
+			add.setAttribute("class","btn btn-danger");
+			add.setAttribute("value",produccion.value.title);
+			add.appendChild(document.createTextNode("Añadir"));
+			var tdTitulo = document.createElement("td");
+			tdTitulo.appendChild(document.createTextNode(produccion.value.title));
+			var tdTipo = document.createElement("td");
+			var nomTipo = "";
+			if (produccion.value instanceof Movie) {
+				nomTipo = "Pelicula";
+			}else{
+				nomTipo = "Serie";
+			}
+			tdTipo.appendChild(document.createTextNode(nomTipo));
+			tdAdd.appendChild(add);
+			trPro.appendChild(tdAdd);
+			trPro.appendChild(tdTitulo);
+			trPro.appendChild(tdTipo);
+			tbody.appendChild(trPro);
+			//Añade una funcion a cada boton de añadir
+			add.addEventListener("click", function(){
+				var input = document.forms["addCategory"]["producciones"];
+				//Añade al array el nomnbre de boton
+				arrayProducciones.push(this.value);
+				input.value = arrayProducciones.toString();
+			});
+			produccion = producciones.next();
+		}//Fin del while
 		var grupoBtn = document.createElement("div");
 		grupoBtn.setAttribute("class","form-group d-flex justify-content-around");
 		var aceptar = document.createElement("button");
@@ -249,10 +332,23 @@ function formCategorias(tipo){
 		cancelar.appendChild(document.createTextNode("Cancelar"));
 			
 		//Añade eventos al hacer click sobre los botones del formulario creado
+		$(document).ready(function(){
+			$("#buscador").on("keyup", function() {
+			  var value = $(this).val().toLowerCase();
+			  $("#tablaProducciones tr").filter(function() {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			  });
+			});
+		});
+
 		cancelar.addEventListener("click", showHomePage);
 		cancelar.addEventListener("click", function(){
 													contenidoCentral.setAttribute("class","d-block");
 													contenidoFormularios.setAttribute("class","d-none");
+													//Se limpia el array
+													while(arrayProducciones.length != 0){
+														arrayProducciones.shift();
+													}
 													});
 		//Crea el formulario
 		grupo1.appendChild(label1);
@@ -261,11 +357,25 @@ function formCategorias(tipo){
 		grupo2.appendChild(label2);
 		grupo2.appendChild(input2);
 		grupo2.appendChild(mal2);
+		grupo3.appendChild(label3);
+		divInputBtn.appendChild(divBtn);
+		divBtn.appendChild(botonRemover);
+		divInputBtn.appendChild(produc);
+		grupo3.appendChild(divInputBtn);
+		grupo3.appendChild(buscador);
+		grupo3.appendChild(tabla);
+		tabla.appendChild(thead);
+		tabla.appendChild(tbody);
+		thead.appendChild(tr);
+		tr.appendChild(thVacio);
+		tr.appendChild(thNombre);
+		tr.appendChild(thDesc);
 		grupoBtn.appendChild(aceptar);
 		grupoBtn.appendChild(cancelar);
 		formulario.appendChild(leyenda);
 		formulario.appendChild(grupo1);
 		formulario.appendChild(grupo2);
+		formulario.appendChild(grupo3);
 		formulario.appendChild(grupoBtn);
 		contenidoFormularios.appendChild(formulario);
 		/* FIN DEL FORMULARIO DE AÑADIR CATEGORIA */
@@ -389,8 +499,29 @@ function validarCategorias(){
 //Añade al video system la categoria, si existe no deja añadir
 function addNewCategory(name,description){
 	try {
+		//Añade la categoria al sistema
 		var newCategory = new Category(name,description);
 		video.addCategory(newCategory);
+		//Si hay producciones en el array de producciones las asigna a esa categoria
+		if (arrayProducciones.length != 0) {
+			for (let index = 0; index < arrayProducciones.length; index++) {
+				//recorrremos las producciones
+				var encontrado = false;
+				var producciones = video.productions;
+				var produccion = producciones.next();
+				while ((produccion.done !== true) && (!encontrado)){
+					if (arrayProducciones[index] == produccion.value.title) {
+						video.assignCategory(newCategory,produccion.value);
+						encontrado = true;
+					}
+					produccion = producciones.next();
+				}//Fin del while
+			}//Fin del for
+		}//Fin del if
+		//Se limpia el array
+		while(arrayProducciones.length != 0){
+			arrayProducciones.shift();
+		}
 		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
 		var contenidoCentral = document.getElementById("contenidoCentral");
 		contenidoCentral.setAttribute("class","d-block");
@@ -462,7 +593,7 @@ function formActoresDirectores(tipo,rol){
 		formulario.setAttribute("method","post");
 		var leyenda = document.createElement("legend");
 		leyenda.appendChild(document.createTextNode("Añadir "+rol+""));
-		//NOMBRE DEL ACTOR
+		//NOMBRE DEL ACTOR/DIRECTOR
 		var grupo1 = document.createElement("div");
 		grupo1.setAttribute("class","form-group");
 		var labelName = document.createElement("label");
@@ -477,7 +608,7 @@ function formActoresDirectores(tipo,rol){
 		var malName = document.createElement("small");
 		malName.setAttribute("class","form-text text-muted");
 		malName.setAttribute("id","nombreMal");
-		//APELLIDO1 DEL ACTOR
+		//APELLIDO1 DEL ACTOR/DIRECTOR
 		var grupo2 = document.createElement("div");
 		grupo2.setAttribute("class","form-group");
 		var labelLastName1 = document.createElement("label");
@@ -492,7 +623,7 @@ function formActoresDirectores(tipo,rol){
 		var malLastName1 = document.createElement("small");
 		malLastName1.setAttribute("class","form-text text-muted");
 		malLastName1.setAttribute("id","lastName1Mal");
-		//APELLIDO2 DEL ACTOR
+		//APELLIDO2 DEL ACTOR/DIRECTOR
 		var grupo3 = document.createElement("div");
 		grupo3.setAttribute("class","form-group");
 		var labelLastName2 = document.createElement("label");
@@ -507,7 +638,7 @@ function formActoresDirectores(tipo,rol){
 		var malLastName2 = document.createElement("small");
 		malLastName2.setAttribute("class","form-text text-muted");
 		malLastName2.setAttribute("id","lastName2Mal");
-		//FECHA DE NACIMIENTO DEL ACTOR
+		//FECHA DE NACIMIENTO DEL ACTOR/DIRECTOR
 		var grupo4 = document.createElement("div");
 		grupo4.setAttribute("class","form-group");
 		var labelBorn = document.createElement("label");
@@ -522,7 +653,7 @@ function formActoresDirectores(tipo,rol){
 		var malBorn = document.createElement("small");
 		malBorn.setAttribute("class","form-text text-muted");
 		malBorn.setAttribute("id","bornMal");
-		//IMAGEN DEL ACTOR
+		//IMAGEN DEL ACTOR/DIRECTOR
 		var grupo5 = document.createElement("div");
 		grupo5.setAttribute("class","form-group");
 		var labelPicture = document.createElement("label");
@@ -865,6 +996,9 @@ function deleteDirector(){
 }//Fin de deleteDirector
 
 /* FUNCIONES PARA LOS FORMULARIOS DE LAS PRODUCCIONES */
+var arrayDir = new Array();
+var arrayReparto = new Array();
+var arrayCategorias = new Array();
 //Muestra el formulario de las producciones
 function formProducciones(tipo){
 	//Selecciona la zona debajo del menu horizontal de edicion y la oculta
@@ -999,7 +1133,7 @@ function formProducciones(tipo){
 		selectTipo.setAttribute("class","form-control");
 		selectTipo.setAttribute("name","tipo");
 		selectTipo.setAttribute("id","tipo");
-		selectTipo.setAttribute("onchange","mostrarTipo()");
+		selectTipo.setAttribute("onchange","mostrarDIVS()");
 		var optionNull = document.createElement("option");
 		optionNull.setAttribute("value","0");
 		optionNull.appendChild(document.createTextNode("-- Selecciona tipo --"));
@@ -1012,17 +1146,359 @@ function formProducciones(tipo){
 		selectTipo.appendChild(optionNull);
 		selectTipo.appendChild(optionMovie);
 		selectTipo.appendChild(optionSerie);
-		//Se añade al formulario como hijos
+		//Se añaden como hijos al formulario
 		grupo6.appendChild(labelTipo);
 		grupo6.appendChild(selectTipo);
 		formulario.appendChild(grupo6);
+		//DIV QUE APARECE SI EN EL SELECT SE PONE MOVIE
+		var divMovie = document.createElement("div");
+		divMovie.setAttribute("class","form-group");
+		divMovie.setAttribute("id","divMovie");
+		//RECURSO DE LA PRODUCCION MOVIE
+		var labelResource = document.createElement("label");
+		labelResource.setAttribute("for","recurso");
+		labelResource.appendChild(document.createTextNode("Recurso de la produccion"));
+		var selectResource = document.createElement("select");
+		selectResource.setAttribute("class","form-control mb-2");
+		selectResource.setAttribute("id","recurso");
+		var optionResource = document.createElement("option");
+		optionResource.setAttribute("value","0");
+		optionResource.appendChild(document.createTextNode("-- SIN RECURSO --"));
+		selectResource.appendChild(optionResource);	
+		for (let index = 0; index < arrayRecursos.length; index++) {
+			optionResource = document.createElement("option");
+			optionResource.setAttribute("value",arrayRecursos[index].link);
+			optionResource.appendChild(document.createTextNode(arrayRecursos[index].link));
+			selectResource.appendChild(optionResource);	
+		}//Fin del for	
+		divMovie.appendChild(labelResource);
+		divMovie.appendChild(selectResource);
+		//LONGITUD DE LA PRODUCCION MOVIE
+		var labelCoor = document.createElement("label");
+		labelCoor.setAttribute("for","titulo");
+		labelCoor.appendChild(document.createTextNode("Coordenadas de la produccion"));
+		var inputCoor1 = document.createElement("input");
+		inputCoor1.setAttribute("type","text");
+		inputCoor1.setAttribute("class","form-control");
+		inputCoor1.setAttribute("id","longitud");
+		inputCoor1.setAttribute("onblur","validarCampoNumeroOpcional(this)");
+		inputCoor1.setAttribute("placeholder","Longitud");
+		var malCoor1 = document.createElement("small");
+		malCoor1.setAttribute("class","form-text text-muted");
+		malCoor1.setAttribute("id","longitudMal");
+		var inputCoor2 = document.createElement("input");
+		inputCoor2.setAttribute("type","text");
+		inputCoor2.setAttribute("class","form-control");
+		inputCoor2.setAttribute("id","latitud");
+		inputCoor2.setAttribute("onblur","validarCampoNumeroOpcional(this)");
+		inputCoor2.setAttribute("placeholder","Latitud");
+		var malCoor2 = document.createElement("small");
+		malCoor2.setAttribute("class","form-text text-muted");
+		malCoor2.setAttribute("id","latitudMal");
+		divMovie.appendChild(labelCoor);
+		divMovie.appendChild(inputCoor1);
+		divMovie.appendChild(malCoor1);
+		divMovie.appendChild(inputCoor2);
+		divMovie.appendChild(malCoor2);
+		//DIRECTOR DE LA PRODUCCION MOVIE
+		//SE CREA EL BUSCADOR 
+		var grupo6 = document.createElement("div");
+		grupo6.setAttribute("class","form-group mt-3");
+		var label6 = document.createElement("label");
+		label6.setAttribute("for","produccionesCat");
+		label6.appendChild(document.createTextNode("Asignar director a la nueva produccion"));
+		var divInputBtn = document.createElement("div");
+		divInputBtn.setAttribute("class","input-group");
+		var divBtn = document.createElement("div");
+		divBtn.setAttribute("class","input-group-prepend");
+		var botonRemover = document.createElement("button");
+		botonRemover.setAttribute("type","button");
+		botonRemover.setAttribute("class","btn btn-sm btn-outline-secondary");
+		botonRemover.appendChild(document.createTextNode("Remover"));
+		//añade el evento al hacer click al boton de remover
+		botonRemover.addEventListener("click",function(){
+			var input = document.forms["addProduction"]["director"];
+				//Quita el ultimo elemento del array
+				arrayDir.pop();
+				input.value = arrayDir.toString();
+				//muestra la tabla
+				document.getElementById("divTabla").style.display = "block";
 
+		});
+		var inputDirector = document.createElement("input");
+		inputDirector.setAttribute("class","form-control ");
+		inputDirector.setAttribute("type","text");
+		inputDirector.setAttribute("id","director");
+		inputDirector.readOnly = true;
+		var divTabla = document.createElement("div");
+		divTabla.setAttribute("id","divTabla");
+		var buscador = document.createElement("input");
+		buscador.setAttribute("class","form-control my-3");
+		buscador.setAttribute("type","text");
+		buscador.setAttribute("id","buscador");
+		buscador.setAttribute("placeholder","Buscar...");
+		//SE CREA LA TABLA DE LOS DIRECTORES
+		var tabla = document.createElement("table");
+		tabla.setAttribute("class","table table-bordered");
+		tabla.setAttribute("name","tablaDirector");
+		tabla.setAttribute("id","tablaDirector");
+		var thead = document.createElement("thead");
+		var tr = document.createElement("tr");
+		var thVacio = document.createElement("th");
+		thVacio.appendChild(document.createTextNode(""));
+		var thNombre = document.createElement("th");
+		thNombre.appendChild(document.createTextNode("Nombre completo"));
+		var tbody = document.createElement("tbody");
+		tbody.setAttribute("id","tablaDirectores");
+		var directores = video.directors;
+		var director = directores.next();
+		while (director.done !== true){
+			var trDir = document.createElement("tr");
+			var tdAdd = document.createElement("td");
+			var add = document.createElement("button");
+			add.setAttribute("type","button");
+			add.setAttribute("class","btn btn-danger");
+			if (director.value.lastName2 == null) {
+				director.value.lastName2 = " ";
+			}
+			add.setAttribute("value",director.value.name+" "+director.value.lastName1+" "+director.value.lastName2);
+			add.appendChild(document.createTextNode("Añadir"));
+			var tdNombre = document.createElement("td");
+			tdNombre.appendChild(document.createTextNode(director.value.name+" "+director.value.lastName1+" "+director.value.lastName2));
+			tdNombre.setAttribute("class","col-8");
+			tdAdd.appendChild(add);
+			trDir.appendChild(tdAdd);
+			trDir.appendChild(tdNombre);
+			tbody.appendChild(trDir);
+			//Añade una funcion a cada boton de añadir
+			add.addEventListener("click", function(){
+				var input = document.forms["addProduction"]["director"];
+				//Añade al array el nomnbre de boton
+				arrayDir.push(this.value);
+				input.value = arrayDir.toString();
+				//oculta la tabla
+				document.getElementById("divTabla").style.display = "none";
+			});
+			director = directores.next();
+		}//Fin del while
+		//Añade los eventos de la tabla
+		$(document).ready(function(){
+			$("#buscador").on("keyup", function() {
+			  var value = $(this).val().toLowerCase();
+			  $("#tablaDirectores tr").filter(function() {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			  });
+			});
+		});
+		grupo6.appendChild(label6);
+		divInputBtn.appendChild(divBtn);
+		divBtn.appendChild(botonRemover);
+		divInputBtn.appendChild(inputDirector);
+		grupo6.appendChild(divInputBtn);
+		divTabla.appendChild(buscador);
+		divTabla.appendChild(tabla);
+		grupo6.appendChild(divTabla);
+		tabla.appendChild(thead);
+		tabla.appendChild(tbody);
+		thead.appendChild(tr);
+		tr.appendChild(thVacio);
+		tr.appendChild(thNombre);
+		divMovie.appendChild(grupo6);
+		formulario.appendChild(divMovie);
+		//DIV QUE APARECE SI EN EL SELECT SE PONE SERIE
+		var divSerie = document.createElement("div");
+		divSerie.setAttribute("class","form-group");
+		divSerie.setAttribute("id","divSerie");
+		//TEMPORADA DE LA PRODUCCION SERIE
+		var labelSeason = document.createElement("label");
+		labelSeason.setAttribute("for","recurso");
+		labelSeason.appendChild(document.createTextNode("Temporada de la produccion"));
+		var selectSeason = document.createElement("select");
+		selectSeason.setAttribute("class","form-control");
+		selectSeason.setAttribute("id","temporada");
+		var optionSeason = document.createElement("option");
+		optionSeason.setAttribute("value","0");
+		optionSeason.appendChild(document.createTextNode("-- SIN TEMPORADA --"));
+		selectSeason.appendChild(optionSeason);	
+		for (let index = 0; index < arraySeason.length; index++) {
+			optionSeason = document.createElement("option");
+			optionSeason.setAttribute("value",arraySeason[index].title);
+			optionSeason.appendChild(document.createTextNode(arraySeason[index].title));
+			selectSeason.appendChild(optionSeason);	
+		}//Fin del for	
+		//Se añaden como hijos al formulario
+		divSerie.appendChild(labelSeason);
+		divSerie.appendChild(selectSeason);
+		formulario.appendChild(divSerie);
+		//REPARTO DE LA PRODUCCION
+		//SE CREA EL BUSCADOR 
+		var grupo7 = document.createElement("div");
+		grupo7.setAttribute("class","form-group");
+		var label7 = document.createElement("label");
+		label7.setAttribute("for","categorias");
+		label7.appendChild(document.createTextNode("Reparto de la produccion"));
+		//Div vacio en el que se añaden los actores en los que se pulsa
+		var divReparto = document.createElement("div");
+		divReparto.setAttribute("class","form-group");
+		divReparto.setAttribute("id","divReparto");
+		var buscadorReparto = document.createElement("input");
+		buscadorReparto.setAttribute("class","form-control my-3");
+		buscadorReparto.setAttribute("type","text");
+		buscadorReparto.setAttribute("id","buscadorReparto");
+		buscadorReparto.setAttribute("placeholder","Buscar...");
+		//SE CREA LA TABLA DE LAS CATEGORIAS
+		var tabla = document.createElement("table");
+		tabla.setAttribute("class","table table-bordered");
+		tabla.setAttribute("name","reparto");
+		tabla.setAttribute("id","reparto");
+		var thead = document.createElement("thead");
+		var tr = document.createElement("tr");
+		var thVacio = document.createElement("th");
+		thVacio.appendChild(document.createTextNode(""));
+		var thNombre = document.createElement("th");
+		thNombre.appendChild(document.createTextNode("Nombre"));
+		var tbody = document.createElement("tbody");
+		tbody.setAttribute("id","tablaReparto");
+		//Contador para llevar la cuenta de los divs creados
+		var contador = 0;
+		var actores = video.actors;
+		var actor = actores.next();
+		while (actor.done !== true){
+			var trCat = document.createElement("tr");
+			var tdAdd = document.createElement("td");
+			var add = document.createElement("button");
+			add.setAttribute("type","button");
+			add.setAttribute("class","btn btn-danger");
+			add.setAttribute("value",actor.value.name);
+			add.appendChild(document.createTextNode("Añadir"));
+			var tdTitulo = document.createElement("td");
+			tdTitulo.appendChild(document.createTextNode(actor.value.name));
+			tdAdd.appendChild(add);
+			trCat.appendChild(tdAdd);
+			trCat.appendChild(tdTitulo);
+			tbody.appendChild(trCat);
+			//Añade una funcion a cada boton de añadir
+			add.addEventListener("click", function(){
+				//Añade al array el nombre de boton
+				arrayReparto.push(this.value);
+				//llama a la funcion de añadir divActor
+				addReparto(this.value,contador);
+				contador++;
+			});
+			actor = actores.next();
+		}//Fin del while		
+		//Añade eventos al hacer click sobre los botones del formulario creado
+		$(document).ready(function(){
+			$("#buscadorReparto").on("keyup", function() {
+			var value = $(this).val().toLowerCase();
+			$("#tablaReparto tr").filter(function() {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+			});
+		});
+		grupo7.appendChild(label7);
+		grupo7.appendChild(divReparto);
+		grupo7.appendChild(buscadorReparto);
+		grupo7.appendChild(tabla);
+		tabla.appendChild(thead);
+		tabla.appendChild(tbody);
+		thead.appendChild(tr);
+		tr.appendChild(thVacio);
+		tr.appendChild(thNombre);
+		formulario.appendChild(grupo7);
+		//CATEGORIAS DE LA PRODUCCION
+		//SE CREA EL BUSCADOR 
+		var grupo8 = document.createElement("div");
+		grupo8.setAttribute("class","form-group");
+		var label8 = document.createElement("label");
+		label8.setAttribute("for","categorias");
+		label8.appendChild(document.createTextNode("Asignar categorias a la produccion"));
+		var divInputBtn = document.createElement("div");
+		divInputBtn.setAttribute("class","input-group");
+		var divBtn = document.createElement("div");
+		divBtn.setAttribute("class","input-group-prepend");
+		var botonRemover = document.createElement("button");
+		botonRemover.setAttribute("type","button");
+		botonRemover.setAttribute("class","btn btn-sm btn-outline-secondary");
+		botonRemover.appendChild(document.createTextNode("Remover"));
+		//añade el evento al hacer click al boton de remover
+		botonRemover.addEventListener("click",function(){
+			var input = document.forms["addProduction"]["categorias"];
+				//Quita el ultimo elemento del array
+				arrayCategorias.pop();
+				input.value = arrayCategorias.toString();
 
-
-
-
-
-		
+		});
+		var cat = document.createElement("input");
+		cat.setAttribute("class","form-control ");
+		cat.setAttribute("type","text");
+		cat.setAttribute("id","categorias");
+		cat.readOnly = true;
+		var buscador = document.createElement("input");
+		buscador.setAttribute("class","form-control my-3");
+		buscador.setAttribute("type","text");
+		buscador.setAttribute("id","buscadorCategorias");
+		buscador.setAttribute("placeholder","Buscar...");
+		//SE CREA LA TABLA DE LAS CATEGORIAS
+		var tabla = document.createElement("table");
+		tabla.setAttribute("class","table table-bordered");
+		tabla.setAttribute("name","categoria");
+		tabla.setAttribute("id","categoria");
+		var thead = document.createElement("thead");
+		var tr = document.createElement("tr");
+		var thVacio = document.createElement("th");
+		thVacio.appendChild(document.createTextNode(""));
+		var thNombre = document.createElement("th");
+		thNombre.appendChild(document.createTextNode("Nombre"));
+		var tbody = document.createElement("tbody");
+		tbody.setAttribute("id","tablaCategorias");
+		var categorias = video.categories;
+		var categoria = categorias.next();
+		while (categoria.done !== true){
+			var trCat = document.createElement("tr");
+			var tdAdd = document.createElement("td");
+			var add = document.createElement("button");
+			add.setAttribute("type","button");
+			add.setAttribute("class","btn btn-danger");
+			add.setAttribute("value",categoria.value.name);
+			add.appendChild(document.createTextNode("Añadir"));
+			var tdTitulo = document.createElement("td");
+			tdTitulo.appendChild(document.createTextNode(categoria.value.name));
+			tdAdd.appendChild(add);
+			trCat.appendChild(tdAdd);
+			trCat.appendChild(tdTitulo);
+			tbody.appendChild(trCat);
+			//Añade una funcion a cada boton de añadir
+			add.addEventListener("click", function(){
+				var input = document.forms["addProduction"]["categorias"];
+				//Añade al array el nomnbre de boton
+				arrayCategorias.push(this.value);
+				input.value = arrayCategorias.toString();
+			});
+			categoria = categorias.next();
+		}//Fin del while		
+		//Añade eventos al hacer click sobre los botones del formulario creado
+		$(document).ready(function(){
+			$("#buscadorCategorias").on("keyup", function() {
+			  var value = $(this).val().toLowerCase();
+			  $("#tablaCategorias tr").filter(function() {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			  });
+			});
+		});
+		grupo8.appendChild(label8);
+		divInputBtn.appendChild(divBtn);
+		divBtn.appendChild(botonRemover);
+		divInputBtn.appendChild(cat);
+		grupo8.appendChild(divInputBtn);
+		grupo8.appendChild(buscador);
+		grupo8.appendChild(tabla);
+		tabla.appendChild(thead);
+		tabla.appendChild(tbody);
+		thead.appendChild(tr);
+		tr.appendChild(thVacio);
+		tr.appendChild(thNombre);
+		formulario.appendChild(grupo8);
 		//BOTONES DEL FORMULARIO
 		var grupoBtn = document.createElement("div");
 		grupoBtn.setAttribute("class","form-group d-flex justify-content-around");
@@ -1039,6 +1515,19 @@ function formProducciones(tipo){
 		cancelar.addEventListener("click", function(){
 													contenidoCentral.setAttribute("class","d-block");
 													contenidoFormularios.setAttribute("class","d-none");
+													//Se limpia los arrays array
+													while(arrayProducciones.length != 0){
+														arrayProducciones.shift();
+													}
+													while(arrayDir.length != 0){
+														arrayDir.shift();
+													}
+													while(arrayCategorias.length != 0){
+														arrayCategorias.shift();
+													}
+													while(arrayReparto.length != 0){
+														arrayReparto.shift();
+													}
 													});
 		//Se añade al formulario como hijos
 		grupoBtn.appendChild(aceptar);
@@ -1143,55 +1632,56 @@ function formProducciones(tipo){
 	}//Fin de los if
 }//Fin de formProducciones
 
-//Añade campos al formulario de añadir produccion segun el tipo de produccion
-function mostrarTipo(){
-	//SI ES MOVIE resource = null, locations = null
-	var formulario = document.forms["addProduction"];
-	var tipoProduccion = document.forms["addProduction"]["tipo"];
-	if (tipoProduccion.value == "Movie") {
-		//SELECT PARA EL RECURSO DE LA PRODUCCION MOVIE
-		var grupo7 = document.createElement("div");
-		grupo7.setAttribute("class","form-group");
-		var labelResource = document.createElement("label");
-		labelResource.setAttribute("for","recurso");
-		labelResource.appendChild(document.createTextNode("Recurso de la produccion"));
-		var selectResource = document.createElement("select");
-		selectResource.setAttribute("class","form-control");
-		selectResource.setAttribute("id","recurso");
-		var optionResource = document.createElement("option");
-		optionResource.setAttribute("value","0");
-		optionResource.appendChild(document.createTextNode("-- SIN RECURSO --"));
-		selectResource.appendChild(optionResource);	
-		for (let index = 0; index < arrayRecursos.length; index++) {
-			optionResource = document.createElement("option");
-			optionResource.setAttribute("value",arrayRecursos[index].link);
-			optionResource.appendChild(document.createTextNode(arrayRecursos[index].link));
-			selectResource.appendChild(optionResource);	
-		}//Fin del for	
-		//LONGITUD DE LA PRODUCCION MOVIE
-		var grupo8 = document.createElement("div");
-		grupo8.setAttribute("class","form-group");
-		var labelCoor = document.createElement("label");
-		labelCoor.setAttribute("for","titulo");
-		labelCoor.appendChild(document.createTextNode("Coordenadas de la produccion*"));
-		var inputTitle = document.createElement("input");
-		inputTitle.setAttribute("type","text");
-		inputTitle.setAttribute("class","form-control");
-		inputTitle.setAttribute("id","titulo");
-		inputTitle.setAttribute("onblur","validarCampoTexto(this)");
-		inputTitle.setAttribute("placeholder","Titulo");
-		var malTitle = document.createElement("small");
-		malTitle.setAttribute("class","form-text text-muted");
-		malTitle.setAttribute("id","titleMal");
-		grupo7.appendChild(labelResource);
-		grupo7.appendChild(selectResource);
-		formulario.insertBefore(grupo7,tipoProduccion.nextSibling);
-	}else if(tipoProduccion.value == "Serie"){
-		
+//Oculta o muestra los div de movie o serie segun la opcion
+function mostrarDIVS(){
+	var opcioDiv = document.forms["addProduction"]["tipo"];
+	var divM = document.getElementById("divMovie");
+	var divS = document.getElementById("divSerie");
+	if (opcioDiv.value == "0") {
+		divM.style.display = "none";
+		divS.style.display = "none";
+	}else if(opcioDiv.value == "Movie"){
+		divM.style.display = "block";
+		divS.style.display = "none";
 	}else{
-
+		divM.style.display = "none";
+		divS.style.display = "block";
 	}//Fin del if
-}//Fin de mostrarTipo
+}//Fin de mostrarDIVS
+
+//Añade campos al formulario con los datos del actor
+function addReparto(nombre,contador){
+	//Div en el que se va a añadir la estructura
+	var divReparto = document.getElementById("divReparto");
+
+	var divInputBtn = document.createElement("div");
+	divInputBtn.setAttribute("class","input-group");
+	var divBtn = document.createElement("div");
+	divBtn.setAttribute("class","input-group-prepend");
+	var botonRemover = document.createElement("button");
+	botonRemover.setAttribute("type","button");
+	botonRemover.setAttribute("class","btn btn-sm btn-outline-secondary");
+	botonRemover.appendChild(document.createTextNode("Remover"));
+	//añade el evento al hacer click al boton de remover
+	botonRemover.addEventListener("click",function(){
+		var input = document.forms["addProduction"]["categorias"];
+			//Quita el ultimo elemento del array
+			arrayReparto.pop();
+			input.value = arrayReparto.toString();
+
+	});
+	var act = document.createElement("input");
+	act.setAttribute("class","form-control");
+	act.setAttribute("type","text");
+	act.setAttribute("id","actor"+contador);
+	act.setAttribute("value",nombre);
+	act.readOnly = true;
+
+	divInputBtn.appendChild(divBtn);
+	divBtn.appendChild(botonRemover);
+	divInputBtn.appendChild(act);
+	divReparto.appendChild(divInputBtn);
+}//Fin de addReparto
 
 //Valida los campos al enviar el formulario de añadir produccion
 function validarProducciones(){
@@ -1262,7 +1752,7 @@ function addNewProduction(title, publication, nationality, synopsis, image,resou
 	}	
 }//Fin de addNewProduction
 
-//Elimina una produccion seleccionada
+//Desasigna la produccion de las categorias, actores y director y la elimina del sistema
 function deleteProduction(){
 	var pro = this.value;
 	var eliminar = null;
@@ -1278,6 +1768,55 @@ function deleteProduction(){
 		produccion = producciones.next();
 	}
 	try {
+		/* DESASIGNA LA PRODUCCION DE LAS CATEGORIAS EN LAS QUE ESTA */
+		//Se recorre todas las categorias para quitar la produccion 
+		var categorias = video.categories;
+		var categoria = categorias.next();
+		while (categoria.done !== true){
+			//Se recorren las producciones de esa categoria
+			var productions = video.getProductionsCategory(categoria.value);
+			var production = productions.next();
+			while (production.done !== true){
+				//Si la produccion de esa categoria coincide con el titulo de la producion que vamos a eliminar
+				//las desasigna de todas las categorias en las que este
+				if(production.value.title == eliminar.title){
+					video.deassignCategory(categoria.value,production.value);
+				}
+				production = productions.next();
+			}//Fin del while de las producciones
+			categoria = categorias.next();
+		}//FIn del while de las categorias
+		/* DESASIGNA LA PRODUCCION DEL DIRECTOR */
+		//Se recorren los directores para quitar la produccion que vamos a eliminar
+		//Muestra las producciones en las que esta asignado el actor
+		var directores = video.directors;
+		var director = directores.next();
+		//Recorre todos los directores del sistema
+		while (director.done !== true){
+			//Para cada director hace un iterador con sus producciones
+			var productions = video.getProductionsDirector(director.value);
+			var production = productions.next();
+			while (production.done !== true){
+				//Si la produccion de ese director coincide con el titulo de la producion que vamos a eliminar
+				if(production.value.title == eliminar.title){
+					video.deassignDirector(director.value,production.value);
+				}
+				//Pasa a la siguiente produccion del director
+				production = productions.next();
+			}//Fin del while de las producciones del director
+			//Pasa al siguiente director
+			director = directores.next();
+		}//Fin del while de los directores
+		/* DESASIGNA LA PRODUCCION DE LOS ACTORES */
+		//Obtiene todo el reparto de la produccion
+		var elenco = video.getCast(eliminar);
+		var actor = elenco.next();
+		while (actor.done !== true){
+			//Quitamos al actor de la produccion
+			video.deassignActor(actor.value,eliminar);		
+			actor = elenco.next();
+		}//Fin del while
+		/* ELIMINA EL OBJETO Y MUESTRA DE NUEVO EL CONTENIDO PRINCIPAL */
 		//Elimina el objeto que se ha encontrado
 		video.removeProduction(eliminar);
 		//Selecciona la zona debajo del menu horizontal de edicion y la muestra

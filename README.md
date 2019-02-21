@@ -12,6 +12,9 @@ Guillermo Rodríguez Moraga
 
 Version 0.2.5
 - Se ha añadido el formulario de eliminar produccion
+- Al eliminar una produccion ahora se desasigna del director, actores y categorias
+- Ahora al crear una categoria puedes asignar producciones que esten creadas
+- Al eliminar una categoria se desasigna de las producciones
 
 Version 0.2.4.1
 - Se ha solucionado un error que hacia que la pagina se recargase al introducir mal los datos de inicio de sesion

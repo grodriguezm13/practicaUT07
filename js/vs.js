@@ -1,5 +1,7 @@
 //Array para guardar los recursos del sistema
 var arrayRecursos = new Array();
+//Array para guardar las temporadas del sistema
+var arraySeason = new Array();
 
 //Funcion que inicializa todos los objetos y la relacion entre ellos
 function initPopulate(){
@@ -22,7 +24,7 @@ function initPopulate(){
     //Se crean los objetos category
 	try {
 		var category = new Category("Comedia" , "Películas realizadas con la intención de provocar humor, entretenimiento y/o risa en el espectador.");
-		var category1 = new Category("Romance" , "Un desarrollo romántico o amoroso entre dos personas.");
+		var category1 = new Category("Romance" , "Un desarrollo romántico o amoroso entre dos personas. Puede acabar bien o mal");
 		var category2 = new Category("Terror" , "Realizadas con la intención de provocar tensión, miedo y/o el sobresalto en la audiencia.");
 		var category3 = new Category("Acción" , "El argumento implica una interacción moral entre el «bien» y el «mal» llevada a su fin por la violencia o la fuerza física");
 		var category4 = new Category("Ciencia Ficción","Se basa en un futuro cercano o muy lejano, donde se logra ver el avance de la tecnología y como ejecuta este en la historia");
@@ -78,8 +80,11 @@ function initPopulate(){
 	//Se crean los objetos Season
 	try {
 		var season = new Season("Temporada 1",["Episodio 1","Episodio 2"]);
+		arraySeason.push(season);
 		var season1 = new Season("Temporada 2",["Episodio 1","Episodio 2"]);
+		arraySeason.push(season1);
 		var season2 = new Season("Temporada 3",["Episodio 1","Episodio 2"]);
+		arraySeason.push(season2);
 	} catch (error) {
 		console.log("" + error);
 	}

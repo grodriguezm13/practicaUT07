@@ -59,10 +59,6 @@ button.list-group-item, button.nav-link{
   display: block;
 }
 
-#btnVentanas{
-  display: none;
-}
-
-#menuEdicion{
+#btnVentanas, #menuEdicion, #divMovie, #divSerie, #divInputDir, #divActor{
   display: none;
 }
