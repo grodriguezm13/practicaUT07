@@ -101,7 +101,7 @@ function validarCampoTexto(input){
 
 //Funcion que se usa para los campos de ruta 
 function validarCampoRuta(input){
-	var expresion = /^[a-z]\:\/\/([\d\w]+\.)$/i;
+	var expresion = /^[a-z]\:\/\/([\d\w]+)$/i;
 	if(expresion.test(input.value) || input.value == ""){
 		input.setAttribute("class","form-control border border-success");
 		input.nextSibling.style.display = "none";
@@ -185,6 +185,17 @@ function validarCampoFecha(input){
 		return true;
 	}
 }//Fin de validarCampoFecha
+
+//Comprueba que el valor del select no sea 0
+function validarCampoSelect(input){
+	if(input.value == "0"){
+		input.setAttribute("class","form-control border border-danger");
+		return false;
+	}else{
+		input.setAttribute("class","form-control border border-success");
+		return true;
+	}
+}//Fin del validarCampoSelect
 
 /* FUNCIONES PARA LOS FORMULARIOS DE LAS CATEGORIAS */
 //FALTA MODIFICAR
@@ -1068,12 +1079,12 @@ function formProducciones(tipo){
 		grupo3.setAttribute("class","form-group");
 		var labelNationality = document.createElement("label");
 		labelNationality.setAttribute("for","nationality");
-		labelNationality.appendChild(document.createTextNode("Nacionalidad"));
+		labelNationality.appendChild(document.createTextNode("Nacionalidad*"));
 		var inputNationality = document.createElement("input");
 		inputNationality.setAttribute("type","text");
 		inputNationality.setAttribute("class","form-control");
+		inputNationality.setAttribute("onblur","validarCampoTexto(this)");
 		inputNationality.setAttribute("id","nationality");
-		//inputNationality.setAttribute("onblur","validarCampoTexto(this)");
 		inputNationality.setAttribute("placeholder","Nacionalidad");
 		var malNationality = document.createElement("small");
 		malNationality.setAttribute("class","form-text text-muted");
@@ -1088,12 +1099,12 @@ function formProducciones(tipo){
 		grupo4.setAttribute("class","form-group");
 		var labelSypnosis = document.createElement("label");
 		labelSypnosis.setAttribute("for","synopsis");
-		labelSypnosis.appendChild(document.createTextNode("Sipnosis"));
+		labelSypnosis.appendChild(document.createTextNode("Sipnosis*"));
 		var inputSypnosis = document.createElement("input");
 		inputSypnosis.setAttribute("type","text");
 		inputSypnosis.setAttribute("class","form-control");
+		inputSypnosis.setAttribute("onblur","validarCampoTexto(this)");
 		inputSypnosis.setAttribute("id","synopsis");
-		//inputSypnosis.setAttribute("onblur","validarCampoTexto(this)");
 		inputSypnosis.setAttribute("placeholder","Sipnosis");
 		var malSypnosis = document.createElement("small");
 		malSypnosis.setAttribute("class","form-text text-muted");
@@ -1108,7 +1119,7 @@ function formProducciones(tipo){
 		grupo5.setAttribute("class","form-group");
 		var labelPicture = document.createElement("label");
 		labelPicture.setAttribute("for","picture");
-		labelPicture.appendChild(document.createTextNode("Ruta de la imagen"));
+		labelPicture.appendChild(document.createTextNode("Ruta de la imagen*"));
 		var inputPicture = document.createElement("input");
 		inputPicture.setAttribute("type","text");
 		inputPicture.setAttribute("class","form-control");
@@ -1133,6 +1144,7 @@ function formProducciones(tipo){
 		selectTipo.setAttribute("class","form-control");
 		selectTipo.setAttribute("name","tipo");
 		selectTipo.setAttribute("id","tipo");
+		selectTipo.setAttribute("onblur","validarCampoSelect(this)");
 		selectTipo.setAttribute("onchange","mostrarDIVS()");
 		var optionNull = document.createElement("option");
 		optionNull.setAttribute("value","0");
@@ -1206,7 +1218,7 @@ function formProducciones(tipo){
 		grupo6.setAttribute("class","form-group mt-3");
 		var label6 = document.createElement("label");
 		label6.setAttribute("for","produccionesCat");
-		label6.appendChild(document.createTextNode("Asignar director a la nueva produccion"));
+		label6.appendChild(document.createTextNode("Asignar director a la nueva produccion*"));
 		var divInputBtn = document.createElement("div");
 		divInputBtn.setAttribute("class","input-group");
 		var divBtn = document.createElement("div");
@@ -1230,6 +1242,9 @@ function formProducciones(tipo){
 		inputDirector.setAttribute("type","text");
 		inputDirector.setAttribute("id","director");
 		inputDirector.readOnly = true;
+		var malDirector = document.createElement("small");
+		malDirector.setAttribute("class","form-text text-muted");
+		malDirector.setAttribute("id","directorMal");
 		var divTabla = document.createElement("div");
 		divTabla.setAttribute("id","divTabla");
 		var buscador = document.createElement("input");
@@ -1294,6 +1309,7 @@ function formProducciones(tipo){
 		divInputBtn.appendChild(divBtn);
 		divBtn.appendChild(botonRemover);
 		divInputBtn.appendChild(inputDirector);
+		divInputBtn.appendChild(malDirector);
 		grupo6.appendChild(divInputBtn);
 		divTabla.appendChild(buscador);
 		divTabla.appendChild(tabla);
@@ -1346,7 +1362,7 @@ function formProducciones(tipo){
 		buscadorReparto.setAttribute("type","text");
 		buscadorReparto.setAttribute("id","buscadorReparto");
 		buscadorReparto.setAttribute("placeholder","Buscar...");
-		//SE CREA LA TABLA DE LAS CATEGORIAS
+		//SE CREA LA TABLA DE LOS ACTORES
 		var tabla = document.createElement("table");
 		tabla.setAttribute("class","table table-bordered");
 		tabla.setAttribute("name","reparto");
@@ -1369,13 +1385,17 @@ function formProducciones(tipo){
 			var add = document.createElement("button");
 			add.setAttribute("type","button");
 			add.setAttribute("class","btn btn-danger");
-			add.setAttribute("value",actor.value.name);
+			if (actor.value.lastName2 == null) {
+				actor.value.lastName2 = " ";
+			}
+			add.setAttribute("value",actor.value.name+" "+actor.value.lastName1+" "+actor.value.lastName2);
 			add.appendChild(document.createTextNode("Añadir"));
-			var tdTitulo = document.createElement("td");
-			tdTitulo.appendChild(document.createTextNode(actor.value.name));
+			var tdActor = document.createElement("td");
+			tdActor.appendChild(document.createTextNode(actor.value.name+" "+actor.value.lastName1+" "+actor.value.lastName2));
+			tdActor.setAttribute("class","col-8");
 			tdAdd.appendChild(add);
 			trCat.appendChild(tdAdd);
-			trCat.appendChild(tdTitulo);
+			trCat.appendChild(tdActor);
 			tbody.appendChild(trCat);
 			//Añade una funcion a cada boton de añadir
 			add.addEventListener("click", function(){
@@ -1434,6 +1454,9 @@ function formProducciones(tipo){
 		cat.setAttribute("type","text");
 		cat.setAttribute("id","categorias");
 		cat.readOnly = true;
+		var malCat = document.createElement("small");
+		malCat.setAttribute("class","form-text text-muted");
+		malCat.setAttribute("id","catMal");
 		var buscador = document.createElement("input");
 		buscador.setAttribute("class","form-control my-3");
 		buscador.setAttribute("type","text");
@@ -1464,6 +1487,7 @@ function formProducciones(tipo){
 			add.appendChild(document.createTextNode("Añadir"));
 			var tdTitulo = document.createElement("td");
 			tdTitulo.appendChild(document.createTextNode(categoria.value.name));
+			tdTitulo.setAttribute("class","col-8");
 			tdAdd.appendChild(add);
 			trCat.appendChild(tdAdd);
 			trCat.appendChild(tdTitulo);
@@ -1490,6 +1514,7 @@ function formProducciones(tipo){
 		divInputBtn.appendChild(divBtn);
 		divBtn.appendChild(botonRemover);
 		divInputBtn.appendChild(cat);
+		divInputBtn.appendChild(malCat);
 		grupo8.appendChild(divInputBtn);
 		grupo8.appendChild(buscador);
 		grupo8.appendChild(tabla);
@@ -1632,7 +1657,7 @@ function formProducciones(tipo){
 	}//Fin de los if
 }//Fin de formProducciones
 
-//Oculta o muestra los div de movie o serie segun la opcion
+//Oculta o muestra los div de movie o serie segun la opcion del formulario de producciones
 function mostrarDIVS(){
 	var opcioDiv = document.forms["addProduction"]["tipo"];
 	var divM = document.getElementById("divMovie");
@@ -1653,9 +1678,9 @@ function mostrarDIVS(){
 function addReparto(nombre,contador){
 	//Div en el que se va a añadir la estructura
 	var divReparto = document.getElementById("divReparto");
-
 	var divInputBtn = document.createElement("div");
 	divInputBtn.setAttribute("class","input-group");
+	divInputBtn.setAttribute("id","divActor"+contador+"");
 	var divBtn = document.createElement("div");
 	divBtn.setAttribute("class","input-group-prepend");
 	var botonRemover = document.createElement("button");
@@ -1664,92 +1689,339 @@ function addReparto(nombre,contador){
 	botonRemover.appendChild(document.createTextNode("Remover"));
 	//añade el evento al hacer click al boton de remover
 	botonRemover.addEventListener("click",function(){
-		var input = document.forms["addProduction"]["categorias"];
-			//Quita el ultimo elemento del array
-			arrayReparto.pop();
-			input.value = arrayReparto.toString();
-
+		var input = document.getElementById("divActor"+contador+"");
+		//Quita el ultimo elemento del array
+		arrayReparto.pop();
+		divReparto.removeChild(input);
 	});
+	//INput readonly con el nombre del actor
 	var act = document.createElement("input");
-	act.setAttribute("class","form-control");
+	act.setAttribute("class","form-control col-5");
 	act.setAttribute("type","text");
 	act.setAttribute("id","actor"+contador);
 	act.setAttribute("value",nombre);
 	act.readOnly = true;
-
+	//Input para meter el papel del actor en la produccion
+	var papel = document.createElement("input");
+	papel.setAttribute("class","form-control col-3");
+	papel.setAttribute("type","text");
+	papel.setAttribute("id","papel"+contador);
+	papel.setAttribute("placeholder","Papel en la produccion...");
+	//Checkbox para saber si ese papel es principal o no
+	var divCheckBtn = document.createElement("div");
+	divCheckBtn.setAttribute("class","form-group-prepend col pl-5 pt-2");
+	var check = document.createElement("input");
+	check.setAttribute("class","form-check-input");
+	check.setAttribute("type","checkbox");
+	check.setAttribute("value","principal");
+	check.setAttribute("id","principal"+contador);
+	var labelCheck = document.createElement("label");
+	labelCheck.setAttribute("class","form-check-label");
+	labelCheck.setAttribute("for","principal"+contador);
+	labelCheck.appendChild(document.createTextNode("¿Principal?"));
+	//Se añade todo al formulario
 	divInputBtn.appendChild(divBtn);
 	divBtn.appendChild(botonRemover);
 	divInputBtn.appendChild(act);
+	divInputBtn.appendChild(papel);
+	divInputBtn.appendChild(divCheckBtn);
+	divCheckBtn.appendChild(check);
+	divCheckBtn.appendChild(labelCheck);
+	//Se añade todo al divReparto del formulario de producciones
 	divReparto.appendChild(divInputBtn);
 }//Fin de addReparto
 
 //Valida los campos al enviar el formulario de añadir produccion
 function validarProducciones(){
-	var name = document.forms["addProduction"]["nombreActor"];
-	var malNombre = document.getElementById("nombreMal");
-	var lastName1 = document.forms["addActorDirector"]["lastName1"];
-	var malLastName1 = document.getElementById("lastName1Mal");
-	var lastName2 = document.forms["addActorDirector"]["lastName2"];
-	var born = document.forms["addActorDirector"]["born"];
-	var malBorn = document.getElementById("bornMal");
-	var picture = document.forms["addActorDirector"]["picture"];
-	var malPicture = document.getElementById("pictureMal");
-	//Llama a las funciones de validar
-	var nombreValido = validarCampoTexto(name);
-	var lastName1Valido = validarCampoTexto(lastName1);
-	var bornValido = validarCampoFecha(born);
-	var pictureValido = validarCampoRuta(picture); 
-	if(nombreValido == false){
-		malNombre.innerHTML = "El nombre no puede estar vacio";
+	//VALIDACION DE VARIABLES COMUNES A LOS TIPOS DE PRODUCCION
+	//VARIABLES PARA EL TITULO Y SU VALIDACION
+	var titulo = document.forms["addProduction"]["titulo"];
+	var malTitulo = document.getElementById("titleMal");
+	var tituloValido = validarCampoTexto(titulo);
+	if(tituloValido == false){
+		malTitulo.innerHTML = "El título no puede estar vacío";
 	}
-	if(lastName1Valido == false){
-		malLastName1.innerHTML = "El primer apellido no puede estar vacio";	
+	//VARIABLES PARA LA FECHA Y SU VALIDACION
+	var publicacion = document.forms["addProduction"]["publication"];
+	var malPublicacion = document.getElementById("dateMal");
+	var publicacionValida = validarCampoFecha(publicacion);
+	if(publicacionValida == false){
+		malPublicacion.innerHTML = "La fecha está mal introducida";
 	}
-	if(bornValido == false){
-		malBorn.innerHTML = "La fecha esta mal introducida";	
+	var fecha = new Date(publicacion.value);
+	//VARIABLES PARA LA NACIONALIDAD Y SU VALIDACION
+	var nacionalidad = document.forms["addProduction"]["nationality"];
+	var malNacionalidad = document.getElementById("nationalityMal");
+	var nacionalidadValida = validarCampoTexto(nacionalidad);
+	if(nacionalidadValida == false){
+		malNacionalidad.innerHTML = "La nacionalidad no puede estar vacía";
 	}
-	if(pictureValido == false){
-		malPicture.innerHTML = "La ruta de la imagen esta mal introducida";	
+	//VARIABLES PARA LA SIPNOSIS Y SU VALIDACION
+	var sipnosis = document.forms["addProduction"]["synopsis"];
+	var malSipnosis = document.getElementById("synopsisMal");
+	var sipnosisValida = validarCampoTexto(sipnosis);
+	if(sipnosisValida == false){
+		malSipnosis.innerHTML = "La sipnosis no puede estar vacía";
 	}
-	if (nombreValido && lastName1Valido && bornValido && pictureValido) {
-		var apellido2 = null;
-		var imagen = null;
-		if (lastName2.value != "") {
-			apellido2 = lastName2.value;
+	//VARIABLES PARA LA IMAGEN Y SU VALIDACION
+	var imagen = document.forms["addProduction"]["picture"];
+	var malImagen = document.getElementById("pictureMal");
+	var imagenValida = validarCampoRuta(imagen);
+	if(imagenValida == false){
+		malImagen.innerHTML = "La ruta de la imagen no puede estar vacía";
+	}
+	//VARIABLES PARA LAS CATEGORIAS Y SU VALIDACION
+	var malCategorias = document.getElementById("catMal");
+	var categoriasValida = false;
+	if(arrayCategorias.length == 0){
+		malCategorias.innerHTML = "La producción necesita al menos una categoria";
+		categoriasValida = false;
+	}else{
+		categoriasValida = true;
+	}
+	//VARIABLE PARA EL TIPO DE PRODUCCION
+	var tipo = document.forms["addProduction"]["tipo"].value;
+	if (tipo == "0") {
+		//Si no se ha seleccionado ningun tipo no hace nada
+		return false;
+	} else if(tipo == "Movie"){
+		//Si el tipo es movie
+		//VARIABLES SOLO PARA LA MOVIE
+		//VARIABLES PARA EL DIRECTOR Y SU VALIDACION
+		var malDirector = document.getElementById("directorMal");
+		var directorValido = false;
+		if(arrayDir.length == 0){
+			malDirector.innerHTML = "El director no puede estar vacío";
+			directorValido = false;
+		}else{
+			directorValido = true;
 		}
-		if (picture.value != "") {
-			imagen = picture.value;
+		//VARIABLES PARA LA LONGITUD Y SU VALIDACION
+		var longitud = document.forms["addProduction"]["longitud"];
+		var malLongitud = document.getElementById("longitudMal");
+		var longitudValida = validarCampoNumeroOpcional(longitud);
+		if(longitudValida == false){
+			malLongitud.innerHTML = "La longitud debe ser un número";
 		}
-		var fecha = new Date(""+born.value+"");
-		if (rol == "Actor") {
-			addNewActor(name.value, lastName1.value, fecha, apellido2, imagen);
-		}else if(rol == "Director"){
-			addNewDirector(name.value, lastName1.value, fecha, apellido2, imagen);
+		//VARIABLES PARA LA LATITUD Y SU VALIDACION
+		var latitud = document.forms["addProduction"]["latitud"];
+		var malLatitud = document.getElementById("latitudMal");
+		var latitudValida = validarCampoNumeroOpcional(latitud);
+		if(latitudValida == false){
+			malLatitud.innerHTML = "La latitud debe ser un número";
 		}
-	}//Fin del if
+		if (tituloValido && publicacionValida && nacionalidadValida && sipnosisValida && imagenValida && longitudValida && latitudValida && directorValido && categoriasValida) {
+			//Se recogen y cran los ultimos parametros para la funcion
+			var selectRecurso = document.forms["addProduction"]["recurso"].value;
+			if (selectRecurso != "0") {
+				//Se busca el recurso y se crea
+				for (let index = 0; index < arrayRecursos.length; index++) {
+					if (arrayRecursos[index].link == selectRecurso) {
+						var recurso = new Resource(arrayRecursos[index].duration, arrayRecursos[index].link, arrayRecursos[index].audios, arrayRecursos[index].subtitles);
+					}
+				}
+			}//Fin del if de recursos
+			var coor = null;
+			if(latitud.value != "" && longitud.value != ""){
+				var coor = new Coordinate(latitud.value,longitud.value);
+			}
+			//Llama a la funcion con los parametros recogidos, los demas son nulos
+			addNewProduction(tipo, titulo.value, fecha, nacionalidad.value, sipnosis.value, imagen.value, recurso || null, coor, null);
+		}else{
+			return false;
+		}//Fin del if
+	}else if(tipo == "Serie"){
+		//Si el tipo es serie, tiene que recoger las temporadas
+		var selectTemporada = document.forms["addProduction"]["temporada"].value;
+		if (selectTemporada != "0") {
+			//Se busca el recurso y se crea
+			for (let index = 0; index < arraySeason.length; index++) {
+				if (arraySeason[index].title == selectTemporada) {
+					var temporada = new Season(arraySeason[index].title, arraySeason[index].episodes);
+				}
+			}
+		}//Fin del if de recursos
+		if (tituloValido && publicacionValida && nacionalidadValida && sipnosisValida && imagenValida && categoriasValida) {
+			addNewProduction(tipo, titulo.value, fecha, nacionalidad.value, sipnosis.value, imagen.value, null, null, temporada || null);
+		}else{
+			return false;
+		}
+	}//FIn del if de los tipos
 }//FIn de validarProducciones
 
 //Añade al video system la produccion nueva y la añade, si existe no deja añadir
-function addNewProduction(title, publication, nationality, synopsis, image,resource, locations,seasons){
-	try {
-		var newPerson = new Person(name, lastName1, born, lastName2, picture);
-		video.addActor(newPerson);
-		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
-		var contenidoCentral = document.getElementById("contenidoCentral");
-		contenidoCentral.setAttribute("class","d-block");
-		//Selecciona la zona para poner los formularios
-		var contenidoFormularios = document.getElementById("contenidoFormularios");
-		contenidoFormularios.setAttribute("class","d-none");
-		showHomePage();
-		categoriesMenuPopulate();
-	} catch (error) {
-		document.getElementById("nombreMal").innerHTML = "El actor "+name+" "+lastName1+" ya existe";
-		document.getElementById("nombreMal").style.display = "block";
-		document.getElementById("nombreActor").setAttribute("class","form-control border border-danger");
-		document.getElementById("lastName1Mal").innerHTML = "El actor "+name+" "+lastName1+" ya existe";
-		document.getElementById("lastName1Mal").style.display = "block";
-		document.getElementById("lastName1").setAttribute("class","form-control border border-danger");
-	}	
+function addNewProduction(tipo, titulo, publicacion, nacionalidad, sipnosis, imagen, recurso, coor, temporada){
+	//Si es movie tiene que recoger el director, el reparto
+	//Si es serie tiene que recoger el reparto y las categorias
+	if(tipo == "Movie"){
+		try {
+			//Se crea el objeto Movie
+			var movie = new Movie(titulo, publicacion, nacionalidad, sipnosis, imagen, recurso, coor);
+			try {
+				//Se añade la produccion al video system
+				video.addProduction(movie);
+				try {
+					//Se asignan las categorias a la produccion
+					for (let index = 0; index < arrayCategorias.length; index++) {
+						//Recorremos las categorias del sistema, si coincide alguna con la del array la añade
+						var categorias = video.categories;
+						var categoria = categorias.next();
+						while (categoria.done !== true){
+							if (arrayCategorias[index] == categoria.value.name) {
+								video.assignCategory(categoria.value,movie);
+							}
+							categoria = categorias.next();
+						}
+					}//Fin del for de asignar categorias
+					try {
+						//Se asigna el director a la produccion
+						for (let index = 0; index < arrayDir.length; index++) {
+							var directores = video.directors;
+							var director = directores.next();
+							while (director.done !== true){
+								//Recorremos los directores del sistema, si coincide alguna con la del array la añade
+								if(director.value.lastName2 == null){
+									director.value.lastName2 = " ";
+								}
+								if (arrayDir[index] == director.value.name+" "+director.value.lastName1+" "+director.value.lastName2) {
+									//Si coincide lo añade a la produccion
+									video.assignDirector(director.value,movie);
+								}
+								director = directores.next();
+							}//Fin del while iterador
+						}//Fin del for de asignar categorias
+						//Se asignan el reparto a la produccion si hay
+						if (arrayReparto.length > 0) {
+							try {
+								for (let index = 0; index < arrayReparto.length; index++) {
+									//Recoge el nombre del actor, el papel y si es principal o no
+									var nombre = document.forms["addProduction"]["actor"+index+""].value;
+									var papel = document.forms["addProduction"]["papel"+index+""].value;
+									var principal = document.forms["addProduction"]["principal"+index+""].checked;
+									//Recorre los actores del sistema
+									var actores = video.actors;
+									var actor = actores.next();
+									while (actor.done !== true){
+										//Comprueba si coincide el input del formulario con el del iterador
+										if(actor.value.lastName2 == null){
+											actor.value.lastName2 = " ";
+										}
+										if (nombre == actor.value.name+" "+actor.value.lastName1+" "+actor.value.lastName2) {
+											//Si coincide lo añade a la produccion
+											video.assignActor(actor.value,movie,papel,principal);
+										}
+										actor = actores.next();
+									}//Fin del while iterador
+								}//Fin del for de asignar actor
+							} catch (error) {
+								alert("Error al asignar actores");
+							}//Fin del try de assignActor
+						}//FIn de if que comprueba el array de reparto
+						//Si no ha ocurrido ningun error
+						//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+						var contenidoCentral = document.getElementById("contenidoCentral");
+						contenidoCentral.setAttribute("class","d-block");
+						//Selecciona la zona para poner los formularios
+						var contenidoFormularios = document.getElementById("contenidoFormularios");
+						contenidoFormularios.setAttribute("class","d-none");
+						showHomePage();
+						categoriesMenuPopulate();
+					} catch (error) {
+						document.getElementById("directorMal").innerHTML = "El director ya tiene asignada esa producción";
+						document.getElementById("directorMal").style.display = "block";
+					}//Fin del try de assignDirector	
+				} catch (error) {
+					document.getElementById("catMal").innerHTML = "Ha ocurrido un problema al añadir categorias a la producción";
+					document.getElementById("catMal").style.display = "block";
+				}//Fin del try de assignCategory
+			} catch (error) {
+				document.getElementById("titleMal").innerHTML = "La producción '"+name+"' ya existe";
+				document.getElementById("titleMal").style.display = "block";
+			}//Fin del trye de addproduction
+		} catch (error) {
+			alert("Error al crear movie "+titulo+" "+nacionalidad+" "+publicacion+" "+sipnosis+" "+imagen+" "+recurso+" "+coor);
+		}//Fin del try principal
+	}else{
+		try {
+			//Se crea el objeto Serie
+			var serie = new Serie(titulo, publicacion, nacionalidad, sipnosis, imagen, temporada);
+			try {
+				//Se añade la produccion al video system
+				video.addProduction(serie);
+				try {
+					//Se asignan las categorias a la produccion
+					for (let index = 0; index < arrayCategorias.length; index++) {
+						//Recorremos las categorias del sistema, si coincide alguna con la del array la añade
+						var categorias = video.categories;
+						var categoria = categorias.next();
+						while (categoria.done !== true){
+							if (arrayCategorias[index] == categoria.value.name) {
+								video.assignCategory(categoria.value,serie);
+							}
+							categoria = categorias.next();
+						}
+					}//Fin del for de asignar categorias
+					//Se asignan el reparto a la produccion si hay
+					if (arrayReparto.length > 0) {
+						try {
+							for (let index = 0; index < arrayReparto.length; index++) {
+								//Recoge el nombre del actor, el papel y si es principal o no
+								var nombre = document.forms["addProduction"]["actor"+index+""].value;
+								var papel = document.forms["addProduction"]["papel"+index+""].value;
+								var principal = document.forms["addProduction"]["principal"+index+""].checked;
+								//Recorre los actores del sistema
+								var actores = video.actors;
+								var actor = actores.next();
+								while (actor.done !== true){
+									//Comprueba si coincide el input del formulario con el del iterador
+									if(actor.value.lastName2 == null){
+										actor.value.lastName2 = " ";
+									}
+									if (nombre == actor.value.name+" "+actor.value.lastName1+" "+actor.value.lastName2) {
+										//Si coincide lo añade a la produccion
+										video.assignActor(actor.value,serie,papel,principal);
+									}
+									actor = actores.next();
+								}//Fin del while iterador
+							}//Fin del for de asignar actor
+						} catch (error) {
+							alert("Error al asignar actores");
+						}//Fin del try de assignActor
+					}//FIn de if que comprueba el array de reparto
+					//Si no ha ocurrido ningun error
+					//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+					var contenidoCentral = document.getElementById("contenidoCentral");
+					contenidoCentral.setAttribute("class","d-block");
+					//Selecciona la zona para poner los formularios
+					var contenidoFormularios = document.getElementById("contenidoFormularios");
+					contenidoFormularios.setAttribute("class","d-none");
+					showHomePage();
+					categoriesMenuPopulate();
+				} catch (error) {
+					document.getElementById("catMal").innerHTML = "Ha ocurrido un problema al añadir categorias a la producción";
+					document.getElementById("catMal").style.display = "block";
+				}//Fin del try de assignCategory
+			} catch (error) {
+				document.getElementById("titleMal").innerHTML = "La producción '"+name+"' ya existe";
+				document.getElementById("titleMal").style.display = "block";
+			}//Fin del trye de addproduction
+		} catch (error) {
+			//Error al crear serie
+		}//Fin del try principal
+	}//Fin del if principal
+	//Se limpia los arrays array
+	while(arrayProducciones.length != 0){
+		arrayProducciones.shift();
+	}
+	while(arrayDir.length != 0){
+		arrayDir.shift();
+	}
+	while(arrayCategorias.length != 0){
+		arrayCategorias.shift();
+	}
+	while(arrayReparto.length != 0){
+		arrayReparto.shift();
+	}
 }//Fin de addNewProduction
 
 //Desasigna la produccion de las categorias, actores y director y la elimina del sistema
@@ -2142,3 +2414,16 @@ function deleteResource(){
 	}//Fin del while
 
 }//Fin de deleteProduction
+
+function iterador(){
+	console.log("-----------------------------------------------");
+	//Mostramos las producciones que hay
+	console.log("#### Mostramos las producciones ####");
+	var producciones = video.productions;
+	var produccion = producciones.next();
+	while (produccion.done !== true){
+		console.log ("" + produccion.value);
+		produccion = producciones.next();
+	}
+	console.log("-----------------------------------------------");
+}

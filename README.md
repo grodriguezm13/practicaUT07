@@ -10,6 +10,10 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 0.2.6
+- Ahora puede crearse producciones, tanto series como peliculas
+- Se han añadido validaciones al formulario de las producciones
+
 Version 0.2.5
 - Se ha añadido el formulario de eliminar produccion
 - Al eliminar una produccion ahora se desasigna del director, actores y categorias
