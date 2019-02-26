@@ -604,7 +604,7 @@ function showActor(){
 			nacimiento.appendChild(document.createTextNode("Fecha de nacimiento:"));
 			var nacimientoDescript = document.createElement("p");
 			nacimientoDescript.setAttribute("class","card-text cajaDescripcion");
-			nacimientoDescript.appendChild(document.createTextNode(actor.value.born.toDateString()));			
+			nacimientoDescript.appendChild(document.createTextNode(actor.value.born.toLocaleDateString()));			
 			
 			//Se crea la estructura de las tarjetas con appendChild
 			contenido.appendChild(tarjeta);
@@ -704,7 +704,7 @@ function showDirector(){
 			nacimiento.appendChild(document.createTextNode("Fecha de nacimiento:"));
 			var nacimientoDescript = document.createElement("p");
 			nacimientoDescript.setAttribute("class","card-text cajaDescripcion");
-			nacimientoDescript.appendChild(document.createTextNode(director.value.born.toDateString()));			
+			nacimientoDescript.appendChild(document.createTextNode(director.value.born.toLocaleDateString()));			
 			
 			//Se crea la estructura de las tarjetas con appendChild
 			contenido.appendChild(tarjeta);
@@ -900,7 +900,7 @@ function showProduction(){
 			publication.appendChild(document.createTextNode("Fecha de publicacion:"));
 			var publicationDescript = document.createElement("p");
 			publicationDescript.setAttribute("class","card-text cajaDescripcion");
-			publicationDescript.appendChild(document.createTextNode(produccion.value.publication.toDateString()));
+			publicationDescript.appendChild(document.createTextNode(produccion.value.publication.toLocaleDateString()));
 			/* ESTAS LINEAS SON PARA LA SIPNOSIS DE LA PRODUCCION */
 			var synopsis = document.createElement("p");
 			synopsis.setAttribute("class","card-text cajaTitulo");

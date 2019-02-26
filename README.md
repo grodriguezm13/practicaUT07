@@ -10,6 +10,12 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 1.0
+- Ahora las tablas pueden ocultar o mostrar su contenido
+- Se ha corregido el formato de fecha al mostrar las producciones, actores y directores del sistema
+- Ahora se introducen las fechas en formato DD/MM/AAAA y no MM/DD/AAAA
+- Se han añadido los formularios para modificar categorias, directores y actores
+
 Version 0.2.6
 - Ahora puede crearse producciones, tanto series como peliculas
 - Se han añadido validaciones al formulario de las producciones

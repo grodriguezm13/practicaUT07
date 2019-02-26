@@ -114,6 +114,20 @@ function validarCampoRuta(input){
 }//FIn de validarCampoRuta
 
 //Funcion que se usa para los campos de ruta 
+function validarCampoRutaObligatorio(input){
+	var expresion = /^[a-z]\:\/\/([\d\w]+)$/i;
+	if(expresion.test(input.value)){
+		input.setAttribute("class","form-control border border-success");
+		input.nextSibling.style.display = "none";
+		return true;
+	}else{
+		input.setAttribute("class","form-control border border-danger");
+		input.nextSibling.style.display = "block";
+		return false;
+	}
+}//FIn de validarCampoRuta
+
+//Funcion que se usa para los campos de ruta 
 function validarCampoURL(input){
 	var expresion = /^(http|ftp)\:\/\/([\d\w]+\.)?[\d\w]+\.(com|net|es)(\:(\d){1,4})?$/i;
 	if(expresion.test(input.value)){
@@ -174,7 +188,7 @@ function validarCampoArray(input){
 
 //Funcion que se usa para los campos de fecha
 function validarCampoFecha(input){
-	var expresion = /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/;
+	var expresion = /^(0[1-9]|1\d|2\d|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d{2}$/;
 	if(!expresion.test(input.value)){
 		input.setAttribute("class","form-control border border-danger");
 		input.nextSibling.style.display = "block";
@@ -277,6 +291,9 @@ function formCategorias(tipo){
 		produc.setAttribute("type","text");
 		produc.setAttribute("id","producciones");
 		produc.readOnly = true;
+		var malProduc = document.createElement("small");
+		malProduc.setAttribute("class","form-text text-muted");
+		malProduc.setAttribute("id","producMal");
 		var buscador = document.createElement("input");
 		buscador.setAttribute("class","form-control my-3");
 		buscador.setAttribute("type","text");
@@ -290,7 +307,19 @@ function formCategorias(tipo){
 		var thead = document.createElement("thead");
 		var tr = document.createElement("tr");
 		var thVacio = document.createElement("th");
-		thVacio.appendChild(document.createTextNode(""));
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaProducciones");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
 		var thNombre = document.createElement("th");
 		thNombre.appendChild(document.createTextNode("Nombre"));
 		var thDesc = document.createElement("th");
@@ -373,6 +402,7 @@ function formCategorias(tipo){
 		divBtn.appendChild(botonRemover);
 		divInputBtn.appendChild(produc);
 		grupo3.appendChild(divInputBtn);
+		grupo3.appendChild(malProduc);
 		grupo3.appendChild(buscador);
 		grupo3.appendChild(tabla);
 		tabla.appendChild(thead);
@@ -414,7 +444,19 @@ function formCategorias(tipo){
 		var thead = document.createElement("thead");
 		var tr = document.createElement("tr");
 		var thVacio = document.createElement("th");
-		thVacio.appendChild(document.createTextNode(""));
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaCategorias");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
 		var thNombre = document.createElement("th");
 		thNombre.appendChild(document.createTextNode("Nombre"));
 		var thDesc = document.createElement("th");
@@ -479,12 +521,128 @@ function formCategorias(tipo){
 		formulario.appendChild(grupoBtn);
 		contenidoFormularios.appendChild(formulario);
 	}else if (tipo == "update") {
-		//Llama a la funcion con el parametro add para que cargue los campos
-		formCategorias('add');
-		//Se cambia el titulo del legend del formulario antiguo
-		document.getElementsByTagName("legend")[0].textContent = "Modificar categoria";
-	
-
+		var formulario = document.createElement("form");
+		formulario.setAttribute("name","modCategory");
+		formulario.setAttribute("action","");
+		formulario.setAttribute("onsubmit","return false");
+		formulario.setAttribute("method","post");
+		var leyenda = document.createElement("legend");
+		leyenda.appendChild(document.createTextNode("Modificar categoria"));
+		//SE CREA EL BUSCADOR 
+		var divModificar = document.createElement("div");
+		divModificar.setAttribute("id","divModificar");
+		var grupo1 = document.createElement("div");
+		grupo1.setAttribute("class","form-group mt-3");
+		var label1 = document.createElement("label");
+		label1.setAttribute("for","produccionesCat");
+		label1.appendChild(document.createTextNode("Selecciona una categoria"));
+		var divInputBtn = document.createElement("div");
+		divInputBtn.setAttribute("class","input-group");
+		var divBtn = document.createElement("div");
+		divBtn.setAttribute("class","input-group-prepend");
+		var botonRemover = document.createElement("button");
+		botonRemover.setAttribute("type","button");
+		botonRemover.setAttribute("class","btn btn-sm btn-outline-secondary");
+		botonRemover.appendChild(document.createTextNode("Remover"));
+		//añade el evento al hacer click al boton de remover
+		botonRemover.addEventListener("click",function(){
+			var input = document.forms["modCategory"]["categoria"];
+				input.value = "";
+				//muestra la tabla
+				document.getElementById("divTabla").style.display = "block";
+				//oculta los campos de la categoria para modificar
+				divModificar.removeChild(divModificar.firstChild);
+		});
+		var inputCat = document.createElement("input");
+		inputCat.setAttribute("class","form-control ");
+		inputCat.setAttribute("type","text");
+		inputCat.setAttribute("id","categoria");
+		inputCat.readOnly = true;
+		var divTabla = document.createElement("div");
+		divTabla.setAttribute("id","divTabla");
+		var buscador = document.createElement("input");
+		buscador.setAttribute("class","form-control my-3");
+		buscador.setAttribute("type","text");
+		buscador.setAttribute("id","buscador");
+		buscador.setAttribute("placeholder","Buscar...");
+		//SE CREA LA TABLA DE LAS CATEGORIAS
+		var tabla = document.createElement("table");
+		tabla.setAttribute("class","table table-bordered");
+		tabla.setAttribute("name","tablaCategorias");
+		tabla.setAttribute("id","tablaCategorias");
+		var thead = document.createElement("thead");
+		var tr = document.createElement("tr");
+		var thVacio = document.createElement("th");
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaBody");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
+		var thNombre = document.createElement("th");
+		thNombre.appendChild(document.createTextNode("Nombre completo"));
+		var tbody = document.createElement("tbody");
+		tbody.setAttribute("id","tablaBody");
+		var categorias = video.categories;
+		var categoria = categorias.next();
+		while (categoria.done !== true){
+			var trCat = document.createElement("tr");
+			var tdAdd = document.createElement("td");
+			var add = document.createElement("button");
+			add.setAttribute("type","button");
+			add.setAttribute("class","btn btn-danger");
+			add.setAttribute("value",categoria.value.name);
+			add.appendChild(document.createTextNode("Modificar"));
+			var tdNombre = document.createElement("td");
+			tdNombre.appendChild(document.createTextNode(categoria.value.name));
+			tdNombre.setAttribute("class","col-8");
+			tdAdd.appendChild(add);
+			trCat.appendChild(tdAdd);
+			trCat.appendChild(tdNombre);
+			tbody.appendChild(trCat);
+			//Añade una funcion a cada boton de añadir
+			add.addEventListener("click", function(){
+				var input = document.forms["modCategory"]["categoria"];
+				input.value = this.value;
+				//oculta la tabla
+				document.getElementById("divTabla").style.display = "none";
+				//muestra los campos de la categoria para modificar
+				modifyCategory(this.value);
+			});
+			categoria = categorias.next();
+		}//Fin del while
+		//Añade los eventos de la tabla
+		$(document).ready(function(){
+			$("#buscador").on("keyup", function() {
+			  var value = $(this).val().toLowerCase();
+			  $("#tablaCategorias tr").filter(function() {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			  });
+			});
+		});
+		grupo1.appendChild(label1);
+		divInputBtn.appendChild(divBtn);
+		divBtn.appendChild(botonRemover);
+		divInputBtn.appendChild(inputCat);
+		grupo1.appendChild(divInputBtn);
+		divTabla.appendChild(buscador);
+		divTabla.appendChild(tabla);
+		grupo1.appendChild(divTabla);
+		tabla.appendChild(thead);
+		tabla.appendChild(tbody);
+		thead.appendChild(tr);
+		tr.appendChild(thVacio);
+		tr.appendChild(thNombre);
+		formulario.appendChild(grupo1);
+		formulario.appendChild(divModificar);
+		contenidoFormularios.appendChild(formulario);
 	}//Fin de los if
 }//Fin de formCategorias
 
@@ -522,9 +680,14 @@ function addNewCategory(name,description){
 				var produccion = producciones.next();
 				while ((produccion.done !== true) && (!encontrado)){
 					if (arrayProducciones[index] == produccion.value.title) {
-						video.assignCategory(newCategory,produccion.value);
-						encontrado = true;
-					}
+						try {
+							video.assignCategory(newCategory,produccion.value);
+							encontrado = true;
+						} catch (error) {
+							document.getElementById("producMal").style.display = "block";
+							document.getElementById("producMal").innerHTML = "No puedes añadir dos veces la produccion "+produccion.value.title+"";
+						}//Fin del try
+					}//Fin del if
 					produccion = producciones.next();
 				}//Fin del while
 			}//Fin del for
@@ -568,6 +731,7 @@ function deleteCategory(){
 	try {
 		//Elimina el objeto que se ha encontrado
 		video.removeCategory(eliminar);
+		
 		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
 		var contenidoCentral = document.getElementById("contenidoCentral");
 		contenidoCentral.setAttribute("class","d-block");
@@ -580,6 +744,110 @@ function deleteCategory(){
 		alert(eliminar+" "+ button);
 	}
 }//Fin de deleteCategory
+
+//Añade campos al formulario con los datos de la categoria
+function modifyCategory(cat){
+	var encontrado = false;
+	//Variable para guardar el objeto categoria
+	var objetoCategoria = null;
+	var categorias = video.categories;
+	var categoria = categorias.next();
+	while ((categoria.done !== true) && (!encontrado)){
+		if (categoria.value.name == cat) {
+			objetoCategoria = categoria.value;
+			encontrado = true;
+		}
+		categoria = categorias.next();
+	}//Fin del while
+	//Div en el que se va a añadir la estructura
+	var divModificar = document.getElementById("divModificar");
+	var divInputBtn = document.createElement("div");
+	divInputBtn.setAttribute("id","camposModificar");
+	var grupo1 = document.createElement("div");
+	grupo1.setAttribute("class","form-group");
+	var label1 = document.createElement("label");
+	label1.setAttribute("for","nombreCat2");
+	label1.appendChild(document.createTextNode("Nuevo nombre para la categoria"));
+	var input1 = document.createElement("input");
+	input1.setAttribute("type","text");
+	input1.setAttribute("class","form-control");
+	input1.setAttribute("id","nombreCat2");
+	input1.setAttribute("onblur","validarCampoTexto(this)");
+	input1.setAttribute("value",objetoCategoria.name);
+	var mal1 = document.createElement("small");
+	mal1.setAttribute("class","form-text text-muted");
+	mal1.setAttribute("id","nombreMal");
+	var grupo2 = document.createElement("div");
+	grupo2.setAttribute("class","form-group");
+	var label2 = document.createElement("label");
+	label2.setAttribute("for","descripCat2");
+	label2.appendChild(document.createTextNode("Nueva descripcion para la categoria"));
+	var input2 = document.createElement("input");
+	input2.setAttribute("type","text");
+	input2.setAttribute("class","form-control");
+	input2.setAttribute("id","descripCat2");
+	input2.setAttribute("onblur","validarCampoTexto(this)");
+	input2.setAttribute("value",objetoCategoria.description);
+	var mal2 = document.createElement("small");
+	mal2.setAttribute("id","descMal");
+	mal2.setAttribute("class","form-text text-muted");
+	var grupoBtn = document.createElement("div");
+	grupoBtn.setAttribute("class","form-group d-flex justify-content-around");
+	var aceptar = document.createElement("button");
+	aceptar.setAttribute("type","submit");
+	aceptar.setAttribute("class","btn btn-primary ");
+	aceptar.appendChild(document.createTextNode("Guardar"));
+	var cancelar = document.createElement("button");
+	cancelar.setAttribute("type","button");
+	cancelar.setAttribute("class","btn btn-primary");
+	cancelar.appendChild(document.createTextNode("Cancelar"));
+	//Se añaden los eventos de los botones
+	aceptar.addEventListener("click", function(){
+												return validarModificacionCategoria(objetoCategoria);
+											});
+	cancelar.addEventListener("click", showHomePage);
+	cancelar.addEventListener("click", function(){
+												contenidoCentral.setAttribute("class","d-block");
+												contenidoFormularios.setAttribute("class","d-none");
+											});
+	//Se añade todo al formulario
+	grupo1.appendChild(label1);
+	grupo1.appendChild(input1);
+	grupo1.appendChild(mal1);
+	divInputBtn.appendChild(grupo1);
+	grupo2.appendChild(label2);
+	grupo2.appendChild(input2);
+	grupo2.appendChild(mal2);
+	divInputBtn.appendChild(grupo2);
+	grupoBtn.appendChild(aceptar);
+	grupoBtn.appendChild(cancelar);
+	divInputBtn.appendChild(grupoBtn);
+	//Se añade todo al divMOdificrr del formulario de cat3egorias
+	divModificar.appendChild(divInputBtn);
+}//Fin de addReparto
+
+//Valida los campos del formulario de modifiacion
+function validarModificacionCategoria(objetoCategoria){
+	//Se usan los setter para modificar los valores
+	var nombre = document.forms['modCategory']['nombreCat2'].value
+	var descript = document.forms['modCategory']['descripCat2'].value;
+	if (nombre == "") {
+		document.getElementById("nombreMal").innerHTML = "El nombre no puede estar vacío";
+	}
+	if (descript == "") {
+		document.getElementById("nombreMal").innerHTML = "La descripcion no puede estar vacía";
+	}
+	if(nombre != "" && descript != ""){
+		objetoCategoria.name = nombre;
+		objetoCategoria.description = descript;
+		showHomePage();
+		contenidoCentral.setAttribute("class","d-block");
+		contenidoFormularios.setAttribute("class","d-none");
+		return true;
+	}else{
+		return false;
+	}
+}//Fin de validarModificacionCategoria
 
 /* FUNCIONES PARA LOS FORMULARIOS DE LOS ACTORES Y DIRECTORES */
 //FALTA MODIFICAR
@@ -660,7 +928,7 @@ function formActoresDirectores(tipo,rol){
 		inputBorn.setAttribute("class","form-control");
 		inputBorn.setAttribute("id","born");
 		inputBorn.setAttribute("onblur","validarCampoFecha(this)");
-		inputBorn.setAttribute("placeholder","MM/DD/AAAA");
+		inputBorn.setAttribute("placeholder","DD/MM/AAAA");
 		var malBorn = document.createElement("small");
 		malBorn.setAttribute("class","form-text text-muted");
 		malBorn.setAttribute("id","bornMal");
@@ -751,7 +1019,19 @@ function formActoresDirectores(tipo,rol){
 		var thead = document.createElement("thead");
 		var tr = document.createElement("tr");
 		var thVacio = document.createElement("th");
-		thVacio.appendChild(document.createTextNode(""));
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaPersonas");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
 		var thNombre = document.createElement("th");
 		thNombre.appendChild(document.createTextNode("Nombre completo"));
 		var tbody = document.createElement("tbody");
@@ -845,9 +1125,165 @@ function formActoresDirectores(tipo,rol){
 		contenidoFormularios.appendChild(formulario);
 		/* FIN DEL FORMULARIO DE ELIMINAR ACTOR/DIRECTOR */
 	}else if (tipo == "update") {
-		
-	
-
+		var formulario = document.createElement("form");
+		formulario.setAttribute("name","modActorDirector");
+		formulario.setAttribute("action","");
+		formulario.setAttribute("onsubmit","return false");
+		formulario.setAttribute("method","post");
+		var leyenda = document.createElement("legend");
+		leyenda.appendChild(document.createTextNode("Modificar "+rol+""));
+		//SE CREA EL BUSCADOR 
+		var divModificar = document.createElement("div");
+		divModificar.setAttribute("id","divModificar");
+		var grupo1 = document.createElement("div");
+		grupo1.setAttribute("class","form-group mt-3");
+		var label1 = document.createElement("label");
+		label1.setAttribute("for","produccionesCat");
+		label1.appendChild(document.createTextNode("Selecciona un "+rol+""));
+		var divInputBtn = document.createElement("div");
+		divInputBtn.setAttribute("class","input-group");
+		var divBtn = document.createElement("div");
+		divBtn.setAttribute("class","input-group-prepend");
+		var botonRemover = document.createElement("button");
+		botonRemover.setAttribute("type","button");
+		botonRemover.setAttribute("class","btn btn-sm btn-outline-secondary");
+		botonRemover.appendChild(document.createTextNode("Remover"));
+		//añade el evento al hacer click al boton de remover
+		botonRemover.addEventListener("click",function(){
+			var input = document.forms["modActorDirector"]["Person"];
+				input.value = "";
+				//muestra la tabla
+				document.getElementById("divTabla").style.display = "block";
+				//oculta los campos de la categoria para modificar
+				divModificar.removeChild(divModificar.firstChild);
+		});
+		var inputCat = document.createElement("input");
+		inputCat.setAttribute("class","form-control ");
+		inputCat.setAttribute("type","text");
+		inputCat.setAttribute("id","Person");
+		inputCat.readOnly = true;
+		var divTabla = document.createElement("div");
+		divTabla.setAttribute("id","divTabla");
+		var buscador = document.createElement("input");
+		buscador.setAttribute("class","form-control my-3");
+		buscador.setAttribute("type","text");
+		buscador.setAttribute("id","buscador");
+		buscador.setAttribute("placeholder","Buscar...");
+		//SE CREA LA TABLA DEL ROL
+		var tabla = document.createElement("table");
+		tabla.setAttribute("class","table table-bordered");
+		tabla.setAttribute("name","tablaPerson");
+		tabla.setAttribute("id","tablaPerson");
+		var thead = document.createElement("thead");
+		var tr = document.createElement("tr");
+		var thVacio = document.createElement("th");
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaBody");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
+		var thNombre = document.createElement("th");
+		thNombre.appendChild(document.createTextNode("Nombre completo"));
+		var tbody = document.createElement("tbody");
+		tbody.setAttribute("id","tablaBody");
+		if (rol == "Actor") {
+			var actores = video.actors;
+			var actor = actores.next();
+			while (actor.done !== true){
+				var trAct = document.createElement("tr");
+				var tdAdd = document.createElement("td");
+				var add = document.createElement("button");
+				add.setAttribute("type","button");
+				add.setAttribute("class","btn btn-danger");
+				if (actor.value.lastName2 == null) {
+					actor.value.lastName2 = " ";
+				}
+				add.setAttribute("value",actor.value.name+" "+actor.value.lastName1+" "+actor.value.lastName2);
+				add.appendChild(document.createTextNode("Modificar"));
+				//Se le añade el evento al boton
+				add.addEventListener("click", function(){
+					var input = document.forms["modActorDirector"]["Person"];
+					input.value = this.value;
+					//oculta la tabla
+					document.getElementById("divTabla").style.display = "none";
+					//muestra los campos de la categoria para modificar
+					modifyPerson(this.value,rol);
+				});
+				var tdAct = document.createElement("td");
+				tdAct.setAttribute("class","col-8");
+				tdAct.appendChild(document.createTextNode(actor.value.name+" "+actor.value.lastName1+" "+actor.value.lastName2));
+				tdAdd.appendChild(add);
+				trAct.appendChild(tdAdd);
+				trAct.appendChild(tdAct);
+				tbody.appendChild(trAct);
+				actor = actores.next();
+			}//Fin del while
+		}else if(rol == "Director"){
+			var directores = video.directors;
+			var director = directores.next();
+			while (director.done !== true){
+				var trDir = document.createElement("tr");
+				var tdAdd = document.createElement("td");
+				var add = document.createElement("button");
+				add.setAttribute("type","button");
+				add.setAttribute("class","btn btn-danger");
+				if (director.value.lastName2 == null) {
+					director.value.lastName2 = " ";
+				}
+				add.setAttribute("value",director.value.name+" "+director.value.lastName1+" "+director.value.lastName2);
+				add.appendChild(document.createTextNode("Modificar"));
+				//Se le añade el evento al boton
+				add.addEventListener("click", function(){
+					var input = document.forms["modActorDirector"]["Person"];
+					input.value = this.value;
+					//oculta la tabla
+					document.getElementById("divTabla").style.display = "none";
+					//muestra los campos de la categoria para modificar
+					modifyPerson(this.value,rol);
+				});
+				var tdDir = document.createElement("td");
+				tdDir.setAttribute("class","col-8");
+				tdDir.appendChild(document.createTextNode(director.value.name+" "+director.value.lastName1+" "+director.value.lastName2));
+				tdAdd.appendChild(add);
+				trDir.appendChild(tdAdd);
+				trDir.appendChild(tdDir);
+				tbody.appendChild(trDir);
+				director = directores.next();
+			}//Fin del while
+		}//Fin del if
+		//Añade los eventos de la tabla
+		$(document).ready(function(){
+			$("#buscador").on("keyup", function() {
+			  var value = $(this).val().toLowerCase();
+			  $("#tablaPerson tr").filter(function() {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			  });
+			});
+		});
+		grupo1.appendChild(label1);
+		divInputBtn.appendChild(divBtn);
+		divBtn.appendChild(botonRemover);
+		divInputBtn.appendChild(inputCat);
+		grupo1.appendChild(divInputBtn);
+		divTabla.appendChild(buscador);
+		divTabla.appendChild(tabla);
+		grupo1.appendChild(divTabla);
+		tabla.appendChild(thead);
+		tabla.appendChild(tbody);
+		thead.appendChild(tr);
+		tr.appendChild(thVacio);
+		tr.appendChild(thNombre);
+		formulario.appendChild(grupo1);
+		formulario.appendChild(divModificar);
+		contenidoFormularios.appendChild(formulario);
 	}//Fin de los if
 }//Fin de formActores
 
@@ -888,7 +1324,8 @@ function validarActoresDirectores(rol){
 		if (picture.value != "") {
 			imagen = picture.value;
 		}
-		var fecha = new Date(""+born.value+"");
+		
+		var fecha = new Date(born.value.split("/")[1]+"/"+born.value.split("/")[0]+"/"+born.value.split("/")[2]);
 		if (rol == "Actor") {
 			addNewActor(name.value, lastName1.value, fecha, apellido2, imagen);
 		}else if(rol == "Director"){
@@ -1006,6 +1443,204 @@ function deleteDirector(){
 	}
 }//Fin de deleteDirector
 
+//Añade campos al formulario con los datos del actor
+function modifyPerson(person, rol){
+	var encontrado = false;
+	//Variable para guardar el objeto categoria
+	var objetoPerson = null;
+	if (rol == "Actor") {
+		var actores = video.actors;
+		var actor = actores.next();
+		while ((actor.done !== true) && (!encontrado)){
+			if(actor.value.lastName2 == null){
+				actor.value.lastName2 = "";
+			}
+			if (actor.value.name+" "+actor.value.lastName1+" "+actor.value.lastName2 == person) {
+				objetoPerson = actor.value;
+				encontrado = true;
+			}
+			actor = actores.next();
+		}//Fin del while
+	}else if(rol == "Director"){
+		var directores = video.directors;
+		var director = directores.next();
+		while ((director.done !== true) && (!encontrado)){
+			if(director.value.lastName2 == null){
+				director.value.lastName2 = "";
+			}
+			if (director.value.name+" "+director.value.lastName1+" "+director.value.lastName2 == person) {
+				objetoPerson = director.value;
+				encontrado = true;
+			}
+			director = directores.next();
+		}//Fin del while
+	}//Fin del if
+	//Div en el que se va a añadir la estructura
+	var divModificar = document.getElementById("divModificar");
+	var divInputBtn = document.createElement("div");
+	divInputBtn.setAttribute("id","camposModificar");
+	//NOMBRE DEL ACTOR/DIRECTOR
+	var grupo1 = document.createElement("div");
+	grupo1.setAttribute("class","form-group");
+	var labelName = document.createElement("label");
+	labelName.setAttribute("for","nombrePerson");
+	labelName.appendChild(document.createTextNode("Nombre*"));
+	var inputName = document.createElement("input");
+	inputName.setAttribute("type","text");
+	inputName.setAttribute("class","form-control");
+	inputName.setAttribute("id","nombrePerson");
+	inputName.setAttribute("onblur","validarCampoTexto(this)");
+	inputName.setAttribute("value",objetoPerson.name);
+	var malName = document.createElement("small");
+	malName.setAttribute("class","form-text text-muted");
+	malName.setAttribute("id","nombreMal");
+	//APELLIDO1 DEL ACTOR/DIRECTOR
+	var grupo2 = document.createElement("div");
+	grupo2.setAttribute("class","form-group");
+	var labelLastName1 = document.createElement("label");
+	labelLastName1.setAttribute("for","lastName12");
+	labelLastName1.appendChild(document.createTextNode("Primer apellido*"));
+	var inputLastName1 = document.createElement("input");
+	inputLastName1.setAttribute("type","text");
+	inputLastName1.setAttribute("class","form-control");
+	inputLastName1.setAttribute("id","lastName12");
+	inputLastName1.setAttribute("onblur","validarCampoTexto(this)");
+	inputLastName1.setAttribute("value",objetoPerson.lastName1);
+	var malLastName1 = document.createElement("small");
+	malLastName1.setAttribute("class","form-text text-muted");
+	malLastName1.setAttribute("id","lastName1Mal");
+	//APELLIDO2 DEL ACTOR/DIRECTOR
+	var grupo3 = document.createElement("div");
+	grupo3.setAttribute("class","form-group");
+	var labelLastName2 = document.createElement("label");
+	labelLastName2.setAttribute("for","lastName22");
+	labelLastName2.appendChild(document.createTextNode("Segundo apellido"));
+	var inputLastName2 = document.createElement("input");
+	inputLastName2.setAttribute("type","text");
+	inputLastName2.setAttribute("class","form-control");
+	inputLastName2.setAttribute("id","lastName22");
+	inputLastName2.setAttribute("onblur","validarCampoTexto(this)");
+	inputLastName2.setAttribute("value",objetoPerson.lastName2);
+	var malLastName2 = document.createElement("small");
+	malLastName2.setAttribute("class","form-text text-muted");
+	malLastName2.setAttribute("id","lastName2Mal");
+	//FECHA DE NACIMIENTO DEL ACTOR/DIRECTOR
+	var grupo4 = document.createElement("div");
+	grupo4.setAttribute("class","form-group");
+	var labelBorn = document.createElement("label");
+	labelBorn.setAttribute("for","born");
+	labelBorn.appendChild(document.createTextNode("Fecha de nacimiento*"));
+	var inputBorn = document.createElement("input");
+	inputBorn.setAttribute("type","text");
+	inputBorn.setAttribute("class","form-control");
+	inputBorn.setAttribute("id","born2");
+	inputBorn.setAttribute("onblur","validarCampoFecha(this)");
+	inputBorn.setAttribute("value",objetoPerson.born.toLocaleDateString());
+	var malBorn = document.createElement("small");
+	malBorn.setAttribute("class","form-text text-muted");
+	malBorn.setAttribute("id","bornMal");
+	//IMAGEN DEL ACTOR/DIRECTOR
+	var grupo5 = document.createElement("div");
+	grupo5.setAttribute("class","form-group");
+	var labelPicture = document.createElement("label");
+	labelPicture.setAttribute("for","picture");
+	labelPicture.appendChild(document.createTextNode("Ruta de la imagen"));
+	var inputPicture = document.createElement("input");
+	inputPicture.setAttribute("type","text");
+	inputPicture.setAttribute("class","form-control");
+	inputPicture.setAttribute("id","picture2");
+	inputPicture.setAttribute("onblur","validarCampoRutaObligatorio(this)");
+	inputPicture.setAttribute("value",objetoPerson.picture);
+	var malPicture = document.createElement("small");
+	malPicture.setAttribute("class","form-text text-muted");
+	malPicture.setAttribute("id","pictureMal");
+	var grupoBtn = document.createElement("div");
+	grupoBtn.setAttribute("class","form-group d-flex justify-content-around");
+	var aceptar = document.createElement("button");
+	aceptar.setAttribute("type","submit");
+	aceptar.setAttribute("class","btn btn-primary ");
+	aceptar.appendChild(document.createTextNode("Guardar"));
+	var cancelar = document.createElement("button");
+	cancelar.setAttribute("type","button");
+	cancelar.setAttribute("class","btn btn-primary");
+	cancelar.appendChild(document.createTextNode("Cancelar"));
+	//Se añaden los eventos de los botones
+	aceptar.addEventListener("click", function(){
+												return validarModificacionPerson(objetoPerson);
+											});
+	cancelar.addEventListener("click", showHomePage);
+	cancelar.addEventListener("click", function(){
+												contenidoCentral.setAttribute("class","d-block");
+												contenidoFormularios.setAttribute("class","d-none");
+											});
+	//Se añade todo al formulario
+	grupo1.appendChild(labelName);
+	grupo1.appendChild(inputName);
+	grupo1.appendChild(malName);
+	grupo2.appendChild(labelLastName1);
+	grupo2.appendChild(inputLastName1);
+	grupo2.appendChild(malLastName1);
+	grupo3.appendChild(labelLastName2);
+	grupo3.appendChild(inputLastName2);
+	grupo3.appendChild(malLastName2);
+	grupo4.appendChild(labelBorn);
+	grupo4.appendChild(inputBorn);
+	grupo4.appendChild(malBorn);
+	grupo5.appendChild(labelPicture);
+	grupo5.appendChild(inputPicture);
+	grupo5.appendChild(malPicture);
+	divInputBtn.appendChild(grupo1);
+	divInputBtn.appendChild(grupo2);
+	divInputBtn.appendChild(grupo3);
+	divInputBtn.appendChild(grupo4);
+	divInputBtn.appendChild(grupo5);
+	grupoBtn.appendChild(aceptar);
+	grupoBtn.appendChild(cancelar);
+	divInputBtn.appendChild(grupoBtn);
+	//Se añade todo al divMOdificar del formulario de personas
+	divModificar.appendChild(divInputBtn);
+}//Fin de modifyPerson
+
+//Valida los campos del formulario de modifiacion
+function validarModificacionPerson(objetoPerson){
+	//Se usan los setter para modificar los valores
+	var nombre = document.forms['modActorDirector']['nombrePerson'].value
+	var lastName1 = document.forms['modActorDirector']['lastName12'].value;
+	var lastName2 = document.forms['modActorDirector']['lastName22'].value;
+	var born = document.forms['modActorDirector']['born2'].value;
+	var picture = document.forms['modActorDirector']['picture2'].value;
+
+	if (nombre == "") {
+		document.getElementById("nombreMal").innerHTML = "El nombre no puede estar vacío";
+	}
+	if (lastName1 == "") {
+		document.getElementById("lastName1Mal").innerHTML = "El apellido 1 no puede estar vacío";
+	}
+	if (lastName2 == "") {
+		document.getElementById("lastName2Mal").innerHTML = "El apellido 2 no puede estar vacío";
+	}
+	if (born == "") {
+		document.getElementById("bornMal").innerHTML = "La fecha no puede estar vacía";
+	}
+	if (picture == "") {
+		document.getElementById("pictureMal").innerHTML = "La ruta de la imagen no puede estar vacía";
+	}
+	if(nombre != "" && lastName1 != "" && lastName2 != "" && born != "" && picture != ""){
+		objetoPerson.name = nombre;
+		objetoPerson.lastName1 = lastName1;
+		objetoPerson.lastName2 = lastName2;
+		var fecha = new Date(born.split("/")[1]+"/"+born.split("/")[0]+"/"+born.split("/")[2]);
+		objetoPerson.born = fecha;
+		objetoPerson.picture = picture;
+		showHomePage();
+		contenidoCentral.setAttribute("class","d-block");
+		contenidoFormularios.setAttribute("class","d-none");
+		return true;
+	}else{
+		return false;
+	}
+}//Fin de validarModificacionPerson
+
 /* FUNCIONES PARA LOS FORMULARIOS DE LAS PRODUCCIONES */
 var arrayDir = new Array();
 var arrayReparto = new Array();
@@ -1065,7 +1700,7 @@ function formProducciones(tipo){
 		inputDate.setAttribute("class","form-control");
 		inputDate.setAttribute("id","publication");
 		inputDate.setAttribute("onblur","validarCampoFecha(this)");
-		inputDate.setAttribute("placeholder","MM/DD/AAAA");
+		inputDate.setAttribute("placeholder","DD/MM/AAAA");
 		var malDate = document.createElement("small");
 		malDate.setAttribute("class","form-text text-muted");
 		malDate.setAttribute("id","dateMal");
@@ -1260,7 +1895,19 @@ function formProducciones(tipo){
 		var thead = document.createElement("thead");
 		var tr = document.createElement("tr");
 		var thVacio = document.createElement("th");
-		thVacio.appendChild(document.createTextNode(""));
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaDirectores");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
 		var thNombre = document.createElement("th");
 		thNombre.appendChild(document.createTextNode("Nombre completo"));
 		var tbody = document.createElement("tbody");
@@ -1351,7 +1998,7 @@ function formProducciones(tipo){
 		var grupo7 = document.createElement("div");
 		grupo7.setAttribute("class","form-group");
 		var label7 = document.createElement("label");
-		label7.setAttribute("for","categorias");
+		label7.setAttribute("for","reparto");
 		label7.appendChild(document.createTextNode("Reparto de la produccion"));
 		//Div vacio en el que se añaden los actores en los que se pulsa
 		var divReparto = document.createElement("div");
@@ -1370,7 +2017,19 @@ function formProducciones(tipo){
 		var thead = document.createElement("thead");
 		var tr = document.createElement("tr");
 		var thVacio = document.createElement("th");
-		thVacio.appendChild(document.createTextNode(""));
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaReparto");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
 		var thNombre = document.createElement("th");
 		thNombre.appendChild(document.createTextNode("Nombre"));
 		var tbody = document.createElement("tbody");
@@ -1470,7 +2129,19 @@ function formProducciones(tipo){
 		var thead = document.createElement("thead");
 		var tr = document.createElement("tr");
 		var thVacio = document.createElement("th");
-		thVacio.appendChild(document.createTextNode(""));
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaCategorias");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
 		var thNombre = document.createElement("th");
 		thNombre.appendChild(document.createTextNode("Nombre"));
 		var tbody = document.createElement("tbody");
@@ -1583,7 +2254,19 @@ function formProducciones(tipo){
 		var thead = document.createElement("thead");
 		var tr = document.createElement("tr");
 		var thVacio = document.createElement("th");
-		thVacio.appendChild(document.createTextNode(""));
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaProducciones");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
 		var thTitulo = document.createElement("th");
 		thTitulo.appendChild(document.createTextNode("Titulo"));
 		var thTipo = document.createElement("th");
@@ -1748,7 +2431,8 @@ function validarProducciones(){
 	if(publicacionValida == false){
 		malPublicacion.innerHTML = "La fecha está mal introducida";
 	}
-	var fecha = new Date(publicacion.value);
+
+	var fecha = new Date(publicacion.value.split("/")[1]+"/"+publicacion.value.split("/")[0]+"/"+publicacion.value.split("/")[2]);
 	//VARIABLES PARA LA NACIONALIDAD Y SU VALIDACION
 	var nacionalidad = document.forms["addProduction"]["nationality"];
 	var malNacionalidad = document.getElementById("nationalityMal");
@@ -2191,7 +2875,7 @@ function formRecursos(tipo){
 		grupoBtn.setAttribute("class","form-group d-flex justify-content-around");
 		var aceptar = document.createElement("button");
 		aceptar.setAttribute("type","submit");
-		aceptar.setAttribute("class","btn btn-primary ");
+		aceptar.setAttribute("class","btn btn-primary");
 		aceptar.appendChild(document.createTextNode("Guardar"));
 		var cancelar = document.createElement("button");
 		cancelar.setAttribute("type","button");
@@ -2251,20 +2935,37 @@ function formRecursos(tipo){
 		var thead = document.createElement("thead");
 		var tr = document.createElement("tr");
 		var thVacio = document.createElement("th");
-		thVacio.appendChild(document.createTextNode(""));
+		var ocultar = document.createElement("button");
+		ocultar.setAttribute("type","button");
+		ocultar.setAttribute("class","btn btn-secondary");
+		ocultar.appendChild(document.createTextNode("Mostrar/Ocultar"));
+		ocultar.addEventListener("click", function(){
+			var cont = document.getElementById("tablaRecursos");
+			if(cont.style.display=="table-row-group"){
+				cont.style.display = "none";
+			}else{
+				cont.style.display = "table-row-group";
+			}
+		});
+		thVacio.appendChild(ocultar);
 		var thLink = document.createElement("th");
+		thLink.setAttribute("class","col-4");
 		thLink.appendChild(document.createTextNode("Enlace"));
 		var thDuration = document.createElement("th");
+		thDuration.setAttribute("class","col-1");
 		thDuration.appendChild(document.createTextNode("Duracion"));
 		var thAudio = document.createElement("th");
+		thAudio.setAttribute("class","col-3");
 		thAudio.appendChild(document.createTextNode("Audios"));
 		var thSub = document.createElement("th");
+		thSub.setAttribute("class","col-3");
 		thSub.appendChild(document.createTextNode("Subtitulos"));
 		var tbody = document.createElement("tbody");
 		tbody.setAttribute("id","tablaRecursos");
 		for (let index = 0; index < arrayRecursos.length; index++) {
 			var trLink = document.createElement("tr");
 			var tdEliminar = document.createElement("td");
+			tdEliminar.setAttribute("class","text-center");
 			var eliminar = document.createElement("button");
 			eliminar.setAttribute("type","button");
 			eliminar.setAttribute("class","btn btn-danger");
@@ -2297,7 +2998,7 @@ function formRecursos(tipo){
 		$(document).ready(function(){
 			$("#buscador").on("keyup", function() {
 			  var value = $(this).val().toLowerCase();
-			  $("#tablaCategorias tr").filter(function() {
+			  $("#tablaRecursos tr").filter(function() {
 				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
 			  });
 			});
@@ -2376,17 +3077,16 @@ function addNewResource(duration, link, audios, subtitles){
 		var newResource = new Resource(duration, link, audios, subtitles);
 		//EL ARRAY A LA QUE SE AÑADEN LOS RECURSOS ESTA EN js/vs.js AL COMIENZO DEL FICHERO
 		arrayRecursos.push(newResource);
-		//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+		//Muestra la pagina principal
+		var contenidoFormularios = document.getElementById("contenidoFormularios");
 		var contenidoCentral = document.getElementById("contenidoCentral");
 		contenidoCentral.setAttribute("class","d-block");
-		//Selecciona la zona para poner los formularios
-		var contenidoFormularios = document.getElementById("contenidoFormularios");
 		contenidoFormularios.setAttribute("class","d-none");
 		showHomePage();
 		categoriesMenuPopulate();
 	} catch (error) {
 		//IMPLEMENTAR
-	}	
+	}
 }//Fin de addNewProduction
 
 //Elimina una produccion seleccionada
@@ -2401,29 +3101,14 @@ function deleteResource(){
 			//Si la encuentra asigna el objeto con ese nombre a la variable eliminar
 			arrayRecursos.splice(index,1);
 			encontrado = true;
-			//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+			//Muestra la pagina principal
+			var contenidoFormularios = document.getElementById("contenidoFormularios");
 			var contenidoCentral = document.getElementById("contenidoCentral");
 			contenidoCentral.setAttribute("class","d-block");
-			//Selecciona la zona para poner los formularios
-			var contenidoFormularios = document.getElementById("contenidoFormularios");
 			contenidoFormularios.setAttribute("class","d-none");
 			showHomePage();
 			categoriesMenuPopulate();
 		}//Fin del if que compara el nombre de la categoria con el valor del select
 		index++;
 	}//Fin del while
-
 }//Fin de deleteProduction
-
-function iterador(){
-	console.log("-----------------------------------------------");
-	//Mostramos las producciones que hay
-	console.log("#### Mostramos las producciones ####");
-	var producciones = video.productions;
-	var produccion = producciones.next();
-	while (produccion.done !== true){
-		console.log ("" + produccion.value);
-		produccion = producciones.next();
-	}
-	console.log("-----------------------------------------------");
-}
