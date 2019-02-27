@@ -101,7 +101,7 @@ function validarCampoTexto(input){
 
 //Funcion que se usa para los campos de ruta 
 function validarCampoRuta(input){
-	var expresion = /^[a-z]\:\/\/([\d\w]+)$/i;
+	var expresion = /^[a-z]\:\/\/(([a-z0-9]+)\/)+([a-z0-9]+)([a-z0-9_\.]+)*(\.[a-z]{1,4})/i;
 	if(expresion.test(input.value) || input.value == ""){
 		input.setAttribute("class","form-control border border-success");
 		input.nextSibling.style.display = "none";
@@ -113,9 +113,9 @@ function validarCampoRuta(input){
 	}
 }//FIn de validarCampoRuta
 
-//Funcion que se usa para los campos de ruta 
+//Funcion que se usa para los campos de ruta obligatorios
 function validarCampoRutaObligatorio(input){
-	var expresion = /^[a-z]\:\/\/([\d\w]+)$/i;
+	var expresion = /^[a-z]\:\/\/(([a-z0-9]+)\/)+([a-z0-9]+)([a-z0-9_\.]+)*(\.[a-z]{1,4})/i;
 	if(expresion.test(input.value)){
 		input.setAttribute("class","form-control border border-success");
 		input.nextSibling.style.display = "none";
@@ -127,7 +127,7 @@ function validarCampoRutaObligatorio(input){
 	}
 }//FIn de validarCampoRuta
 
-//Funcion que se usa para los campos de ruta 
+//Funcion que se usa para los campos de URL
 function validarCampoURL(input){
 	var expresion = /^(http|ftp)\:\/\/([\d\w]+\.)?[\d\w]+\.(com|net|es)(\:(\d){1,4})?$/i;
 	if(expresion.test(input.value)){
@@ -141,7 +141,7 @@ function validarCampoURL(input){
 	}
 }//FIn de validarCampoRuta
 
-//Funcion que se usa para los campos de ruta 
+//Funcion que se usa para los campos de numero
 function validarCampoNumero(input){
 	var expresion = /^[+-]?\d+$/;
 	if(expresion.test(input.value)){
@@ -155,7 +155,7 @@ function validarCampoNumero(input){
 	}
 }//FIn de validarCampoNumero
 
-//Funcion que se usa para los campos de ruta 
+//Funcion que se usa para los campos de numeros opcionales 
 function validarCampoNumeroOpcional(input){
 	var expresion = /^[+-]?\d+$/;
 	if(expresion.test(input.value) || input.value == ""){
@@ -169,7 +169,7 @@ function validarCampoNumeroOpcional(input){
 	}
 }//FIn de validarCampoNumeroOpcional
 
-//Funcion que se usa para los campos de ruta 
+//Funcion que se usa para los campos array
 function validarCampoArray(input){
 	var expresion = /^[A-z]*,*[A-z].*$/;
 	//Puede quedarse vacio por que es un parametro opcional
@@ -1759,7 +1759,7 @@ function formProducciones(tipo){
 		inputPicture.setAttribute("type","text");
 		inputPicture.setAttribute("class","form-control");
 		inputPicture.setAttribute("id","picture");
-		inputPicture.setAttribute("onblur","validarCampoRuta(this)");
+		inputPicture.setAttribute("onblur","validarCampoRutaObligatorio(this)");
 		inputPicture.setAttribute("placeholder","X://xxxxxx/xxxx");
 		var malPicture = document.createElement("small");
 		malPicture.setAttribute("class","form-text text-muted");
@@ -2450,7 +2450,7 @@ function validarProducciones(){
 	//VARIABLES PARA LA IMAGEN Y SU VALIDACION
 	var imagen = document.forms["addProduction"]["picture"];
 	var malImagen = document.getElementById("pictureMal");
-	var imagenValida = validarCampoRuta(imagen);
+	var imagenValida = validarCampoRutaObligatorio(imagen);
 	if(imagenValida == false){
 		malImagen.innerHTML = "La ruta de la imagen no puede estar vacía";
 	}

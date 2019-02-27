@@ -231,17 +231,30 @@ function initPopulate(){
 
 //Funcion que actualiza las migas de pan
 function breadcrumb(lugar, anterior, valor){
-
+	var nav = document.getElementById("navMigas");
 	//Selecciona la zona de las migas de pan y quita el contenido para añadir el nuevo
 	var migas = document.getElementById("breadcrumb");
 	while (migas.firstChild) {
 		migas.removeChild(migas.firstChild);
 	}
+	//Añade el boton de cerrar ventanas
+	var liVentanas = document.createElement("li");
+	liVentanas.setAttribute("class","nav-item ml-auto");
+	liVentanas.setAttribute("style","display: none");
+	liVentanas.setAttribute("id","btnVentanas");
+	var btnVentanas = document.createElement("button");
+	btnVentanas.setAttribute("type","button");
+	btnVentanas.setAttribute("class","btn btn-outline-secondary btn-sm cerrarVentana");
+	btnVentanas.addEventListener("click",cerrarVentanas);
+	btnVentanas.appendChild(document.createTextNode("Cerrar ventanas"));
+	liVentanas.appendChild(btnVentanas);
+	
 	if (lugar == "Inicio") {
 		var inicio = document.createElement("li");
 		inicio.setAttribute("class","breadcrumb-item btn btn-sm active");
 		inicio.appendChild(document.createTextNode(valor));
 		migas.appendChild(inicio);
+		nav.appendChild(liVentanas);
 	}else if ((lugar == "Actores") || (lugar == "Directores") || (lugar == "Producciones")) {
 		var inicio = document.createElement("li");
 		var enlaceInicio = document.createElement("button");
@@ -255,6 +268,7 @@ function breadcrumb(lugar, anterior, valor){
 		actual.setAttribute("class","breadcrumb-item btn btn-sm active");
 		actual.appendChild(document.createTextNode(valor));
 		migas.appendChild(actual);
+		nav.appendChild(liVentanas);
 	}else {
 		var inicio = document.createElement("li");
 		var enlaceInicio = document.createElement("button");
@@ -284,8 +298,8 @@ function breadcrumb(lugar, anterior, valor){
 		actual.setAttribute("aria-current","page");
 		actual.appendChild(document.createTextNode(valor));
 		migas.appendChild(actual);
+		nav.appendChild(liVentanas);
 	}
-	
 }//Fin de breadcrumb
 
 //Carga las tarjetas de la pagina de inicio con las categorias

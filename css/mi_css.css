@@ -59,6 +59,15 @@ button.list-group-item, button.nav-link{
   display: block;
 }
 
-#btnVentanas, #menuEdicion, #divMovie, #divSerie, #divInputDir, #divActor{
+#menuEdicion, #divMovie, #divSerie, #divInputDir, #divActor{
   display: none;
+}
+
+button.cerrarVentana{
+  background-color: white;
+}
+
+div.d-flex {
+  height: 55px;
+  background-color: #e9ecef;
 }

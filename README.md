@@ -10,6 +10,10 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 1.0.1
+- Se ha corregido un fallo con las validaciones de ruta al añadir producciones
+- Cambios en la interfaz
+
 Version 1.0
 - Ahora las tablas pueden ocultar o mostrar su contenido
 - Se ha corregido el formato de fecha al mostrar las producciones, actores y directores del sistema
