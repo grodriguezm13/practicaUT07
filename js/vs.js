@@ -253,6 +253,15 @@ function breadcrumb(lugar, anterior, valor){
 		var inicio = document.createElement("li");
 		inicio.setAttribute("class","breadcrumb-item btn btn-sm active");
 		inicio.appendChild(document.createTextNode(valor));
+		inicio.addEventListener("click",function(){
+					//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+					var contenidoCentral = document.getElementById("contenidoCentral");
+					contenidoCentral.setAttribute("class","d-block");
+					//Selecciona la zona para poner los formularios
+					var contenidoFormularios = document.getElementById("contenidoFormularios");
+					contenidoFormularios.setAttribute("class","d-none");
+					showHomePage();
+				});
 		migas.appendChild(inicio);
 		nav.appendChild(liVentanas);
 	}else if ((lugar == "Actores") || (lugar == "Directores") || (lugar == "Producciones")) {
@@ -326,7 +335,7 @@ function showHomePage(){
 	while (categoria.done !== true){
 		//Crea las card de la zona central
 		var tarjeta = document.createElement("div");
-		tarjeta.setAttribute("class","col-lg-4 col-md-6 mb-4");
+		tarjeta.setAttribute("class","col-lg-4 col-md-6 mb-4 zoom");	
 		var borde = document.createElement("div");
 		borde.setAttribute("class","card h-100");
 		var cuerpo = document.createElement("div");

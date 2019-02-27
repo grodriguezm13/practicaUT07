@@ -41,7 +41,7 @@
               <!-- Se muestra si se ha iniciado sesion, sino esta oculto -->
               <div id="btnCuenta">
                 <li class="nav-item">
-                  <button type="button" class="btn btn-primary" onclick="document.cookie = 'userMail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';checkCookie();">Cerrar Sesion</a>
+                  <button type="button" class="btn btn-primary" onclick="document.cookie = 'userMail=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; checkCookie(); showHomePage();">Cerrar Sesion</a>
                 </li>
               </div>
             </ul>
@@ -53,8 +53,8 @@
   <!-- COMIENZO CONTENIDO PRINCIPAL -->
   <main class="container">
     <!-- MIGAS DE PAN -->
-    <nav aria-label="breadcrumb">
-      <div class="d-flex mb-3">
+    <nav aria-label="breadcrumb" class="migas">
+      <div class="d-flex mb-3 rounded">
         <ol id="breadcrumb" class="breadcrumb w-75">
           <!-- AQUI VAN LAS MIGAS DE PAN -->
         </ol>
@@ -63,7 +63,7 @@
         </ol>
       </div>
     </nav>
-    <ul id="menuEdicion" class="nav nav-pills nav-fill bg-dark my-3">
+    <ul id="menuEdicion" class="nav nav-pills nav-fill bg-dark my-3 rounded">
       <li class="nav-item dropdown">
         <a class="nav-link dropbtn btn btn-dark" href="javascript:void(0)">CATEGORIAS</a>
         <div class="dropdown-content">
@@ -127,7 +127,7 @@
         </div>
         <!-- COLUMNA DEL CONTENIDO PRINCIPAL-->
         <div id="columnaContenido" class="col-md-9">
-          <h1 id="tituloZona"></h1>
+          <h1 id="tituloZona" class="mb-4"></h1>
           <div id="tarjetasZona" class="row">
               
             <!-- AQUI SE MUESTRA TODA LA INFORMACION DE LA PAGINA -->

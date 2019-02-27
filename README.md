@@ -10,6 +10,11 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 1.0.2
+- Se han corregido fallos en la interfaz
+- Se ha corregido un fallo al mostrar los submenus del menu edicion
+- Se ha corregido un error que impedia volver al menu principal desde alguna opcion del menu de edicion
+
 Version 1.0.1
 - Se ha corregido un fallo con las validaciones de ruta al añadir producciones
 - Cambios en la interfaz
