@@ -317,6 +317,13 @@ function showHomePage(){
 	var tituloContenido = document.getElementById("tituloZona");
 	tituloContenido.innerHTML = "Categorias del sistema";
 
+	//Selecciona la zona debajo del menu horizontal de edicion y la muestra
+	var contenidoCentral = document.getElementById("contenidoCentral");
+	contenidoCentral.setAttribute("class","d-block");
+	//oculta la zona para poner los formularios
+	var contenidoFormularios = document.getElementById("contenidoFormularios");
+	contenidoFormularios.setAttribute("class","d-none");
+
 	//Actualiza las migas de pan
 	breadcrumb("Inicio",null,"Inicio");
 

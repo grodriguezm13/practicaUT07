@@ -10,6 +10,9 @@ Guillermo Rodríguez Moraga
 
 ## Versiones
 
+Version 1.0.3
+- Se ha corregido un fallo al cerrar sesion con los formularios abiertos
+
 Version 1.0.2
 - Se han corregido fallos en la interfaz
 - Se ha corregido un fallo al mostrar los submenus del menu edicion
